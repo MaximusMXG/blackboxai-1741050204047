@@ -1,22 +1,29 @@
 const express = require('express');
-const router = express.Router();
 const User = require('../models/User');
 const { auth } = require('../middleware/auth');
+const router = express.Router();
 
-// Register a new user
+// Register new user
 router.post('/register', async (req, res) => {
     try {
         const { username, email, password } = req.body;
-        if (!username || !email || !password) {
-            return res.status(400).json({ error: 'Username, email and password are required' });
-        }
-        const user = await User.create(username, email, password);
-        res.status(201).json(user);
+        
+        const user = new User({ username, email, password });
+        await user.save();
+        
+        const token = user.generateAuthToken();
+        res.status(201).json({
+            id: user._id,
+            username: user.username,
+            email: user.email,
+            slices: user.slices,
+            token
+        });
     } catch (error) {
-        if (error.message.includes('UNIQUE constraint failed')) {
-            res.status(409).json({ error: 'Username or email already exists' });
+        if (error.code === 11000) { // MongoDB duplicate key error
+            res.status(400).json({ error: 'Username or email already exists' });
         } else {
-            res.status(500).json({ error: error.message });
+            res.status(400).json({ error: error.message });
         }
     }
 });
@@ -25,44 +32,30 @@ router.post('/register', async (req, res) => {
 router.post('/login', async (req, res) => {
     try {
         const { email, password } = req.body;
-        if (!email || !password) {
-            return res.status(400).json({ error: 'Email and password are required' });
-        }
-        const user = await User.login(email, password);
-        res.json(user);
+        const userData = await User.login(email, password);
+        res.json(userData);
     } catch (error) {
-        res.status(401).json({ error: error.message });
+        res.status(400).json({ error: error.message });
     }
 });
 
-// Get current user profile
+// Get user profile
 router.get('/profile', auth, async (req, res) => {
     try {
-        const user = await User.getById(req.user.userId);
-        if (!user) {
-            return res.status(404).json({ error: 'User not found' });
-        }
+        const user = await User.findById(req.user._id).select('-password');
         res.json(user);
     } catch (error) {
-        res.status(500).json({ error: error.message });
+        res.status(500).json({ error: 'Error fetching profile' });
     }
 });
 
 // Get user's slice allocation
 router.get('/:id/slices', auth, async (req, res) => {
     try {
-        const allocation = await User.getSliceAllocation(req.params.id);
-        const totalSlices = await User.getTotalSlices(req.params.id);
-        const usedSlices = await User.getCurrentSlicesUsed(req.params.id);
-        
-        res.json({
-            total_slices: totalSlices,
-            used_slices: usedSlices,
-            available_slices: totalSlices - usedSlices,
-            allocations: allocation
-        });
+        const subscriptions = await Subscription.getUserSubscriptions(req.params.id);
+        res.json(subscriptions);
     } catch (error) {
-        res.status(500).json({ error: error.message });
+        res.status(500).json({ error: 'Error fetching slice allocation' });
     }
 });
 

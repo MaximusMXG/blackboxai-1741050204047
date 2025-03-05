@@ -1,83 +1,97 @@
 const express = require('express');
+const Subscription = require('../models/Subscription');
+const { auth } = require('../middleware/auth');
 const router = express.Router();
-const SubscriptionSlice = require('../models/SubscriptionSlice');
 
 // Allocate slices to a video
-router.post('/', async (req, res) => {
+router.post('/', auth, async (req, res) => {
     try {
-        const { user_id, video_id, slices } = req.body;
+        const { video_id, slices } = req.body;
         
-        if (!user_id || !video_id || !slices) {
-            return res.status(400).json({ 
-                error: 'User ID, video ID, and number of slices are required' 
-            });
-        }
+        // Validate slice allocation
+        await Subscription.validateAllocation(req.user._id, slices);
 
-        if (slices < 0 || slices > 8) {
-            return res.status(400).json({ 
-                error: 'Slice allocation must be between 0 and 8' 
-            });
-        }
-
-        const allocation = await SubscriptionSlice.allocateSlices(user_id, video_id, slices);
-        res.status(201).json(allocation);
+        const subscription = new Subscription({
+            userId: req.user._id,
+            videoId: video_id,
+            slices
+        });
+        
+        await subscription.save();
+        await subscription.populate('videoId', 'title creator thumbnail_url genre');
+        
+        res.status(201).json(subscription);
     } catch (error) {
-        res.status(500).json({ error: error.message });
+        res.status(400).json({ error: error.message });
     }
 });
 
-// Get current slice allocation for a user-video pair
-router.get('/user/:userId/video/:videoId', async (req, res) => {
+// Get user's current allocation for a video
+router.get('/user/:userId/video/:videoId', auth, async (req, res) => {
     try {
-        const { userId, videoId } = req.params;
-        const slices = await SubscriptionSlice.getCurrentAllocation(userId, videoId);
-        res.json({ slices });
+        const subscription = await Subscription.findOne({
+            userId: req.params.userId,
+            videoId: req.params.videoId
+        }).populate('videoId', 'title creator thumbnail_url genre');
+        
+        res.json(subscription || { slices: 0 });
     } catch (error) {
-        res.status(500).json({ error: error.message });
+        res.status(500).json({ error: 'Error fetching subscription' });
     }
 });
 
 // Update slice allocation
-router.put('/user/:userId/video/:videoId', async (req, res) => {
+router.put('/user/:userId/video/:videoId', auth, async (req, res) => {
     try {
-        const { userId, videoId } = req.params;
         const { slices } = req.body;
+        
+        // Validate slice allocation
+        await Subscription.validateAllocation(req.params.userId, slices);
 
-        if (slices === undefined) {
-            return res.status(400).json({ error: 'Number of slices is required' });
+        const subscription = await Subscription.findOneAndUpdate(
+            {
+                userId: req.params.userId,
+                videoId: req.params.videoId
+            },
+            { slices },
+            { new: true }
+        ).populate('videoId', 'title creator thumbnail_url genre');
+
+        if (!subscription) {
+            return res.status(404).json({ error: 'Subscription not found' });
         }
 
-        if (slices < 0 || slices > 8) {
-            return res.status(400).json({ 
-                error: 'Slice allocation must be between 0 and 8' 
-            });
-        }
-
-        const result = await SubscriptionSlice.updateAllocation(userId, videoId, slices);
-        res.json(result);
+        res.json(subscription);
     } catch (error) {
-        res.status(500).json({ error: error.message });
+        res.status(400).json({ error: error.message });
     }
 });
 
 // Remove slice allocation
-router.delete('/user/:userId/video/:videoId', async (req, res) => {
+router.delete('/user/:userId/video/:videoId', auth, async (req, res) => {
     try {
-        const { userId, videoId } = req.params;
-        const result = await SubscriptionSlice.removeAllocation(userId, videoId);
-        res.json(result);
+        const subscription = await Subscription.findOneAndDelete({
+            userId: req.params.userId,
+            videoId: req.params.videoId
+        });
+
+        if (!subscription) {
+            return res.status(404).json({ error: 'Subscription not found' });
+        }
+
+        res.json({ message: 'Subscription removed successfully' });
     } catch (error) {
-        res.status(500).json({ error: error.message });
+        res.status(500).json({ error: 'Error removing subscription' });
     }
 });
 
 // Get all subscriptions for a user
-router.get('/user/:userId', async (req, res) => {
+router.get('/user/:userId', auth, async (req, res) => {
     try {
-        const subscriptions = await SubscriptionSlice.getUserSubscriptions(req.params.userId);
+        const subscriptions = await Subscription.getUserSubscriptions(req.params.userId);
         res.json(subscriptions);
     } catch (error) {
-        res.status(500).json({ error: error.message });
+        res.status(500).json({ error: 'Error fetching subscriptions' });
     }
 });
 

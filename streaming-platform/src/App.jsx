@@ -6,7 +6,9 @@ import MainstreamSection from './pages/MainstreamSection';
 import IndieSection from './pages/IndieSection';
 import CrowdfundingSection from './pages/CrowdfundingSection';
 import Auth from './pages/Auth';
-import { AuthProvider, useAuth } from './context/AuthContext';
+import VideoPage from './pages/VideoPage'; // Import the VideoPage component
+import { AuthProvider } from './context/auth-context.jsx';
+import { useAuth } from './hooks/useAuth.jsx';
 import './styles/main.css';
 import './styles/auth.css';
 
@@ -104,6 +106,7 @@ const AppContent = () => {
               </PrivateRoute>
             } 
           />
+          <Route path="/videos/:id" element={<VideoPage />} /> {/* New route for VideoPage */}
         </Routes>
         <Footer />
       </main>

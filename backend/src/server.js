@@ -1,50 +1,37 @@
 const express = require('express');
 const cors = require('cors');
-const path = require('path');
 require('dotenv').config();
+require('./db/database'); // MongoDB connection
 
-// Import routes
-const usersRouter = require('./routes/users');
-const videosRouter = require('./routes/videos');
-const subscriptionsRouter = require('./routes/subscriptions');
+const userRoutes = require('./routes/users');
+const videoRoutes = require('./routes/videos');
+const subscriptionRoutes = require('./routes/subscriptions');
 
-// Initialize express app
 const app = express();
+const port = process.env.PORT || 3002;
 
 // Middleware
 app.use(cors());
 app.use(express.json());
-app.use(express.urlencoded({ extended: true }));
 
 // Routes
-app.use('/api/users', usersRouter);
-app.use('/api/videos', videosRouter);
-app.use('/api/subscriptions', subscriptionsRouter);
-
-// Basic route for testing
-app.get('/', (req, res) => {
-    res.json({ 
-        message: 'Welcome to the Slice API',
-        endpoints: {
-            users: '/api/users',
-            videos: '/api/videos',
-            subscriptions: '/api/subscriptions'
-        }
-    });
-});
+app.use('/api/users', userRoutes);
+app.use('/api/videos', videoRoutes);
+app.use('/api/subscriptions', subscriptionRoutes);
 
 // Error handling middleware
 app.use((err, req, res, next) => {
     console.error(err.stack);
-    res.status(500).json({ 
-        error: 'Something went wrong!',
-        message: err.message 
-    });
+    res.status(500).json({ error: 'Something went wrong!' });
 });
 
-// Start server
-const PORT = process.env.PORT || 3001;
-app.listen(PORT, () => {
-    console.log(`Server is running on port ${PORT}`);
-    console.log(`API Documentation available at http://localhost:${PORT}`);
+// Health check endpoint
+app.get('/health', (req, res) => {
+    res.json({ status: 'OK' });
 });
+
+app.listen(port, () => {
+    console.log(`Server is running on port ${port}`);
+});
+
+module.exports = app;

@@ -7,6 +7,43 @@
     background-color: var(--primary-dark);
 }
 
+.loading-spinner {
+    display: inline-block;
+    width: 20px;
+    height: 20px;
+    margin-right: 8px;
+    border: 3px solid rgba(255, 255, 255, 0.3);
+    border-radius: 50%;
+    border-top-color: #fff;
+    animation: spin 1s ease-in-out infinite;
+}
+
+@keyframes spin {
+    to { transform: rotate(360deg); }
+}
+
+.btn-primary.loading {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    opacity: 0.8;
+    cursor: not-allowed;
+}
+
+.error-message {
+    background-color: rgba(255, 0, 0, 0.1);
+    border: 1px solid rgba(255, 0, 0, 0.3);
+    border-radius: 4px;
+    padding: 10px;
+    margin-bottom: 20px;
+    color: #ff6b6b;
+}
+
+.error-message p {
+    margin: 0;
+    font-size: 14px;
+}
+
 .auth-box {
     background-color: var(--background-secondary);
     padding: 2rem;

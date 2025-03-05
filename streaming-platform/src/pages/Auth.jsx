@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { useAuth } from '../context/AuthContext';
+import { useAuth } from '../hooks/useAuth.jsx';
 import { FaUser, FaEnvelope, FaLock } from 'react-icons/fa';
 
 const Auth = () => {
@@ -16,20 +16,52 @@ const Auth = () => {
     const { login, register } = useAuth();
     const navigate = useNavigate();
 
+    const validateForm = () => {
+        if (!formData.email || !formData.password) {
+            setError('Please fill in all required fields');
+            return false;
+        }
+        
+        if (!isLogin && !formData.username) {
+            setError('Username is required for registration');
+            return false;
+        }
+
+        const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+        if (!emailRegex.test(formData.email)) {
+            setError('Please enter a valid email address');
+            return false;
+        }
+
+        if (formData.password.length < 8) {
+            setError('Password must be at least 8 characters long');
+            return false;
+        }
+
+        return true;
+    };
+
     const handleSubmit = async (e) => {
         e.preventDefault();
         setError('');
+
+        if (!validateForm()) {
+            return;
+        }
+
         setLoading(true);
 
         try {
             if (isLogin) {
                 await login(formData.email, formData.password);
+                navigate('/');
             } else {
                 await register(formData.username, formData.email, formData.password);
+                navigate('/');
             }
-            navigate('/');
         } catch (err) {
-            setError(err.toString());
+            const errorMessage = err.response?.data?.error || err.message || 'An error occurred';
+            setError(errorMessage);
         } finally {
             setLoading(false);
         }
@@ -47,7 +79,11 @@ const Auth = () => {
             <div className="auth-box">
                 <h2>{isLogin ? 'Sign In' : 'Create Account'}</h2>
                 
-                {error && <div className="error-message">{error}</div>}
+                {error && (
+                    <div className="error-message" role="alert">
+                        <p>{error}</p>
+                    </div>
+                )}
                 
                 <form onSubmit={handleSubmit}>
                     {!isLogin && (
@@ -90,10 +126,17 @@ const Auth = () => {
                     
                     <button 
                         type="submit" 
-                        className="btn-primary" 
+                        className={`btn-primary ${loading ? 'loading' : ''}`}
                         disabled={loading}
                     >
-                        {loading ? 'Loading...' : (isLogin ? 'Sign In' : 'Create Account')}
+                        {loading ? (
+                            <>
+                                <span className="loading-spinner"></span>
+                                <span>Please wait...</span>
+                            </>
+                        ) : (
+                            isLogin ? 'Sign In' : 'Create Account'
+                        )}
                     </button>
                 </form>
                 

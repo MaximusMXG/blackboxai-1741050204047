@@ -1,9 +1,9 @@
-import { createContext, useState, useContext, useEffect } from 'react';
-import api from '../services/api';
+import { createContext, useState, useEffect } from 'react';
+import api, { userService } from '../services/api';
 
 const AuthContext = createContext(null);
 
-export const AuthProvider = ({ children }) => {
+const AuthProvider = ({ children }) => {
     const [user, setUser] = useState(null);
     const [loading, setLoading] = useState(true);
 
@@ -11,8 +11,7 @@ export const AuthProvider = ({ children }) => {
         const token = localStorage.getItem('token');
         if (token) {
             api.defaults.headers.common['Authorization'] = `Bearer ${token}`;
-            // Fetch user profile
-            api.user.getProfile()
+            userService.getProfile()
                 .then(response => {
                     setUser(response.data);
                 })
@@ -30,7 +29,7 @@ export const AuthProvider = ({ children }) => {
 
     const login = async (email, password) => {
         try {
-            const response = await api.user.login(email, password);
+            const response = await userService.login(email, password);
             const { token, ...userData } = response.data;
             localStorage.setItem('token', token);
             api.defaults.headers.common['Authorization'] = `Bearer ${token}`;
@@ -43,7 +42,7 @@ export const AuthProvider = ({ children }) => {
 
     const register = async (username, email, password) => {
         try {
-            const response = await api.user.register(username, email, password);
+            const response = await userService.register(username, email, password);
             const { token, ...userData } = response.data;
             localStorage.setItem('token', token);
             api.defaults.headers.common['Authorization'] = `Bearer ${token}`;
@@ -71,10 +70,4 @@ export const AuthProvider = ({ children }) => {
     );
 };
 
-export const useAuth = () => {
-    const context = useContext(AuthContext);
-    if (!context) {
-        throw new Error('useAuth must be used within an AuthProvider');
-    }
-    return context;
-};
+export { AuthContext, AuthProvider };

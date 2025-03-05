@@ -1,6 +1,6 @@
 import axios from 'axios';
 
-const API_URL = 'http://localhost:3001/api';
+const API_URL = 'http://localhost:3002/api';
 
 const api = axios.create({
     baseURL: API_URL,
@@ -8,12 +8,6 @@ const api = axios.create({
         'Content-Type': 'application/json',
     },
 });
-
-// Add auth token to requests if it exists
-const token = localStorage.getItem('token');
-if (token) {
-    api.defaults.headers.common['Authorization'] = `Bearer ${token}`;
-}
 
 export const userService = {
     register: (username, email, password) => 
@@ -50,8 +44,4 @@ export const subscriptionService = {
         api.get(`/subscriptions/user/${userId}`),
 };
 
-export default {
-    user: userService,
-    video: videoService,
-    subscription: subscriptionService,
-};
+export default api;

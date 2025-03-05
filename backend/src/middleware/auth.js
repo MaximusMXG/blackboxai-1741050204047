@@ -1,8 +1,7 @@
 const jwt = require('jsonwebtoken');
+const User = require('../models/User');
 
-const JWT_SECRET = process.env.JWT_SECRET || 'your-secret-key';
-
-const auth = (req, res, next) => {
+const auth = async (req, res, next) => {
     try {
         const token = req.header('Authorization')?.replace('Bearer ', '');
         
@@ -10,20 +9,26 @@ const auth = (req, res, next) => {
             throw new Error();
         }
 
-        const decoded = jwt.verify(token, JWT_SECRET);
-        req.user = decoded;
+        const decoded = jwt.verify(token, process.env.JWT_SECRET || 'your-secret-key');
+        const user = await User.findById(decoded.id);
+
+        if (!user) {
+            throw new Error();
+        }
+
+        req.user = user;
+        req.token = token;
         next();
     } catch (error) {
-        res.status(401).json({ error: 'Please authenticate.' });
+        res.status(401).json({ error: 'Please authenticate' });
     }
-};
-
-const generateToken = (userId) => {
-    return jwt.sign({ userId }, JWT_SECRET, { expiresIn: '24h' });
 };
 
 module.exports = {
     auth,
-    generateToken,
-    JWT_SECRET
+    generateToken: (userId) => jwt.sign(
+        { id: userId },
+        process.env.JWT_SECRET || 'your-secret-key',
+        { expiresIn: '24h' }
+    )
 };

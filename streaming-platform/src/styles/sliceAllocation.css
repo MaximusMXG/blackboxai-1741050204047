@@ -1,0 +1,88 @@
+.slice-allocation {
+    background: var(--background-secondary);
+    border-radius: 12px;
+    padding: 1.5rem;
+    margin: 1rem 0;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.slice-allocation h3 {
+    color: var(--text-primary);
+    margin-bottom: 1rem;
+    font-size: 1.2rem;
+}
+
+.slice-counter {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 1rem;
+    margin: 1rem 0;
+}
+
+.slice-display {
+    display: flex;
+    gap: 0.5rem;
+    align-items: center;
+}
+
+.slice {
+    color: var(--text-secondary);
+    transition: all 0.3s ease;
+}
+
+.slice.active {
+    color: var(--primary-green);
+    transform: scale(1.1);
+}
+
+.slice-btn {
+    background: var(--primary-green);
+    color: white;
+    border: none;
+    border-radius: 50%;
+    width: 32px;
+    height: 32px;
+    font-size: 1.2rem;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.3s ease;
+}
+
+.slice-btn:hover:not(:disabled) {
+    background: var(--primary-green-dark);
+    transform: scale(1.1);
+}
+
+.slice-btn:disabled {
+    background: var(--text-secondary);
+    cursor: not-allowed;
+    opacity: 0.5;
+}
+
+.slice-info {
+    color: var(--text-secondary);
+    font-size: 0.9rem;
+    text-align: center;
+    margin-top: 1rem;
+}
+
+.error-message {
+    color: var(--error-color);
+    text-align: center;
+    margin-top: 0.5rem;
+    font-size: 0.9rem;
+}
+
+/* Animation for slice allocation */
+@keyframes slicePop {
+    0% { transform: scale(1); }
+    50% { transform: scale(1.2); }
+    100% { transform: scale(1); }
+}
+
+.slice.active:hover {
+    animation: slicePop 0.3s ease;
+}

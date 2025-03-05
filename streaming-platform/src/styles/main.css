@@ -1,11 +1,17 @@
+/* Import slice allocation styles */
+@import './sliceAllocation.css';
+
 :root {
   --primary-green: #98FB98;  /* Pastel Green */
+  --primary-green-dark: #7FFF7F; /* Darker pastel green for hover states */
   --primary-dark: #141414;   /* Netflix Dark */
   --primary-light: #FFFFFF;
   --accent-green: #7FFF7F;   /* Slightly darker pastel green */
   --text-primary: #FFFFFF;
   --text-secondary: #B3B3B3;
   --sidebar-width: 240px;
+  --background-secondary: #1f1f1f;
+  --error-color: #ff6b6b;
 }
 
 body {
@@ -119,6 +125,24 @@ body {
   background-color: rgba(255, 255, 255, 0.2);
 }
 
+.user-info {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  padding: 1rem;
+  margin-bottom: 1rem;
+  background-color: rgba(255, 255, 255, 0.05);
+  border-radius: 4px;
+  color: var(--text-primary);
+}
+
+.user-info span {
+  font-weight: 500;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
 .card {
   background-color: #1f1f1f;
   border-radius: 0.5rem;
@@ -127,7 +151,36 @@ body {
 }
 
 .card:hover {
-  transform: scale(1.05);
+  transform: scale(1.02);
+}
+
+/* Video Card Styles */
+.video-card {
+  position: relative;
+  background-color: var(--background-secondary);
+  transition: all 0.3s ease;
+}
+
+.video-details {
+  padding: 1rem;
+  border-top: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.video-actions {
+  display: flex;
+  gap: 0.5rem;
+  margin-bottom: 1rem;
+}
+
+.btn-sm {
+  padding: 0.5rem 1rem;
+  font-size: 0.875rem;
+}
+
+.btn-primary, .btn-secondary {
+  display: flex;
+  align-items: center;
+  justify-content: center;
 }
 
 .section-title {

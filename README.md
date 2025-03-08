@@ -19,9 +19,9 @@ Our goal is to create a sustainable, user-driven platform for indie filmmakers, 
 4. **Discover & Fund** – Support in-development projects to help bring them to life.
 
 ## 🛠️ Tech Stack
-- **Frontend:** [TBD] 
-- **Backend:** [TBD] (Node.js, Python, or something else?)
-- **Database:** [TBD] (PostgreSQL, Firebase, or MongoDB?)
+- **Frontend:** [TBD] React JS & React Native
+- **Backend:** [TBD] Node.js
+- **Database:** [TBD] MongoDB an a SQL Based system for other data
 - **Cloud Storage:** Likely AWS S3, Google Cloud, or a decentralized alternative
 - **Payment Processing:** Stripe or a similar service for subscriptions and creator payouts
 

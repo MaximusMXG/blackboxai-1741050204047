@@ -1,13 +1,13 @@
 import { useState } from 'react';
 import { FaPlay, FaInfoCircle } from 'react-icons/fa';
-import { Link } from 'react-router-dom'; // Import Link for navigation
+import { Link } from 'react-router-dom';
 import SliceAllocation from './SliceAllocation';
 
 const VideoCard = ({ video, userId }) => {
     const [showDetails, setShowDetails] = useState(false);
 
     const handleAllocationChange = (newSlices) => {
-        console.log(`Updated allocation for video ${video.id}: ${newSlices} slices`);
+        console.log(`Updated allocation for video ${video._id}: ${newSlices} slices`);
     };
 
     return (
@@ -38,7 +38,7 @@ const VideoCard = ({ video, userId }) => {
                     background: 'linear-gradient(to top, rgba(0,0,0,0.8) 0%, transparent 100%)'
                 }}>
                     <h3 style={{ marginBottom: '0.5rem' }}>
-                        <Link to={`/videos/${video.id}`} style={{ color: 'inherit', textDecoration: 'none' }}>
+                        <Link to={`/videos/${video._id}`} style={{ color: 'inherit', textDecoration: 'none' }}>
                             {video.title}
                         </Link>
                     </h3>
@@ -71,7 +71,7 @@ const VideoCard = ({ video, userId }) => {
                     {userId && (
                         <SliceAllocation 
                             userId={userId}
-                            videoId={video.id}
+                            videoId={video._id}
                             onAllocationChange={handleAllocationChange}
                         />
                     )}

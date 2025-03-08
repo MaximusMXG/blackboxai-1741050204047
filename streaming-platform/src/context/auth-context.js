@@ -1,5 +1,5 @@
 import { createContext, useState, useEffect } from 'react';
-import { api, userService } from '../services/api';
+import api, { userService } from '../services/api';
 
 const AuthContext = createContext(null);
 
@@ -10,12 +10,14 @@ const AuthProvider = ({ children }) => {
     useEffect(() => {
         const token = localStorage.getItem('token');
         if (token) {
+            api.defaults.headers.common['Authorization'] = `Bearer ${token}`;
             userService.getProfile()
                 .then(response => {
                     setUser(response.data);
                 })
                 .catch(() => {
                     localStorage.removeItem('token');
+                    delete api.defaults.headers.common['Authorization'];
                 })
                 .finally(() => {
                     setLoading(false);
@@ -30,6 +32,7 @@ const AuthProvider = ({ children }) => {
             const response = await userService.login(email, password);
             const { token, ...userData } = response.data;
             localStorage.setItem('token', token);
+            api.defaults.headers.common['Authorization'] = `Bearer ${token}`;
             setUser(userData);
             return userData;
         } catch (error) {
@@ -42,6 +45,7 @@ const AuthProvider = ({ children }) => {
             const response = await userService.register(username, email, password);
             const { token, ...userData } = response.data;
             localStorage.setItem('token', token);
+            api.defaults.headers.common['Authorization'] = `Bearer ${token}`;
             setUser(userData);
             return userData;
         } catch (error) {
@@ -50,7 +54,8 @@ const AuthProvider = ({ children }) => {
     };
 
     const logout = () => {
-        userService.logout();
+        localStorage.removeItem('token');
+        delete api.defaults.headers.common['Authorization'];
         setUser(null);
     };
 

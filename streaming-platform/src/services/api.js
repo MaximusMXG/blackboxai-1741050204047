@@ -9,6 +9,24 @@ const api = axios.create({
     },
 });
 
+// Add a request interceptor to add the auth token
+api.interceptors.request.use(
+    (config) => {
+        const token = localStorage.getItem('token');
+        if (token) {
+            config.headers.Authorization = `Bearer ${token}`;
+        }
+        return config;
+    },
+    (error) => {
+        return Promise.reject(error);
+    }
+);
+
+// Export the axios instance
+export { api };
+
+// User service
 export const userService = {
     register: (username, email, password) => 
         api.post('/users/register', { username, email, password }),
@@ -18,11 +36,15 @@ export const userService = {
         api.get('/users/profile'),
     getSliceAllocation: (id) => 
         api.get(`/users/${id}/slices`),
+    logout: () => {
+        localStorage.removeItem('token');
+    }
 };
 
+// Video service
 export const videoService = {
-    create: (title, creator, thumbnail_url) => 
-        api.post('/videos', { title, creator, thumbnail_url }),
+    create: (title, creator, thumbnail_url, genre) => 
+        api.post('/videos', { title, creator, thumbnail_url, genre }),
     getAll: () => 
         api.get('/videos'),
     getById: (id) => 
@@ -31,6 +53,7 @@ export const videoService = {
         api.get(`/videos/${id}/stats`),
 };
 
+// Subscription service
 export const subscriptionService = {
     allocateSlices: (userId, videoId, slices) => 
         api.post('/subscriptions', { user_id: userId, video_id: videoId, slices }),
@@ -44,4 +67,8 @@ export const subscriptionService = {
         api.get(`/subscriptions/user/${userId}`),
 };
 
-export default api;
+export default {
+    user: userService,
+    video: videoService,
+    subscription: subscriptionService
+};

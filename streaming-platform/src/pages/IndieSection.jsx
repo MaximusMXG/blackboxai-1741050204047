@@ -1,39 +1,23 @@
 import { useState, useEffect } from 'react';
 import { FaPlay, FaInfoCircle, FaGamepad, FaFilm } from 'react-icons/fa';
 import VideoCard from '../components/common/VideoCard';
-import api from '../services/api';
+import { videoService } from '../services/api';
 
 const IndieSection = () => {
   const [videos, setVideos] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
-  // TODO: Replace with actual user authentication
-  const mockUserId = 1;
 
   useEffect(() => {
     const fetchVideos = async () => {
       try {
-        const response = await api.video.getAll();
-        const videoData = response.data;
-        
-        // Group videos by category
-        const grouped = videoData.reduce((acc, video) => {
-          const category = video.genre === 'Game' ? 'Indie Games' : 
-                          video.genre === 'Film' ? 'Indie Films' : 'Rising Stars';
-          
-          if (!acc[category]) {
-            acc[category] = [];
-          }
-          acc[category].push(video);
-          return acc;
-        }, {});
-
-        setVideos(Object.entries(grouped).map(([title, items]) => ({
-          title,
-          items
-        })));
+        const response = await videoService.getAll();
+        // Filter only indie videos
+        const indieVideos = response.data.filter(video => video.genre === 'indie');
+        setVideos(indieVideos);
         setLoading(false);
       } catch (err) {
+        console.error('Error fetching videos:', err);
         setError('Failed to load videos');
         setLoading(false);
       }
@@ -101,26 +85,21 @@ const IndieSection = () => {
         </div>
       </section>
 
-      {/* Content Categories */}
-      {videos.map((category) => (
-        <section key={category.title}>
-          <h2 className="section-title">
-            <span style={{ marginRight: '0.5rem' }}>
-              {category.title === "Indie Games" ? <FaGamepad /> : <FaFilm />}
-            </span>
-            {category.title}
-          </h2>
-          <div className="content-grid">
-            {category.items.map((video) => (
-              <VideoCard 
-                key={video.id} 
-                video={video}
-                userId={mockUserId}
-              />
-            ))}
-          </div>
-        </section>
-      ))}
+      {/* Indie Videos Grid */}
+      <section>
+        <h2 className="section-title">
+          <FaGamepad style={{ marginRight: '0.5rem' }} />
+          Indie Games
+        </h2>
+        <div className="content-grid">
+          {videos.map((video) => (
+            <VideoCard 
+              key={video._id} 
+              video={video}
+            />
+          ))}
+        </div>
+      </section>
     </div>
   );
 };

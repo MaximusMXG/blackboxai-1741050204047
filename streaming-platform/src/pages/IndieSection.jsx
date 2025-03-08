@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import VideoCard from '../components/common/VideoCard';
-import { api } from '../services/api';
+import { videoService } from '../services/api';
 import '../styles/sections.css';
 
 const IndieSection = () => {
@@ -11,7 +11,7 @@ const IndieSection = () => {
     useEffect(() => {
         const fetchIndieVideos = async () => {
             try {
-                const response = await api.get('/videos/indie');
+                const response = await videoService.getByGenre('indie');
                 setVideos(response.data);
             } catch (error) {
                 console.error('Error fetching indie videos:', error);
@@ -64,13 +64,19 @@ const IndieSection = () => {
             </div>
 
             <div className="video-grid">
-                {filteredVideos.map(video => (
-                    <VideoCard
-                        key={video.id}
-                        video={video}
-                        className="indie-card"
-                    />
-                ))}
+                {filteredVideos.length > 0 ? (
+                    filteredVideos.map(video => (
+                        <VideoCard
+                            key={video._id}
+                            video={video}
+                            className="indie-card"
+                        />
+                    ))
+                ) : (
+                    <div className="no-content">
+                        <p>No videos found in this category</p>
+                    </div>
+                )}
             </div>
 
             {filteredVideos.length === 0 && (

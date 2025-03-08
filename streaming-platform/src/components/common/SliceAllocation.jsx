@@ -1,22 +1,41 @@
-import React, { useState } from 'react';
-import { api } from '../../services/api';
+import React, { useState, useEffect } from 'react';
+import { useAuth } from '../../hooks/useAuth';
 import '../../styles/sliceAllocation.css';
 
 const SliceAllocation = ({ videoId, currentSlices = 0 }) => {
+    const { allocateSlices, user, refreshUserData, isRefreshing } = useAuth();
     const [slices, setSlices] = useState(currentSlices);
     const [isAdjusting, setIsAdjusting] = useState(false);
     const [loading, setLoading] = useState(false);
     const [error, setError] = useState(null);
+    const [animating, setAnimating] = useState(false);
+    
+    // Update local state when props change
+    useEffect(() => {
+        setSlices(currentSlices);
+    }, [currentSlices]);
 
     const handleSliceChange = async (newValue) => {
+        if (newValue === slices) return;
+        
+        const change = newValue - slices;
+        if (change > 0 && user.slices < change) {
+            setError(`You only have ${user.slices} slices available`);
+            return;
+        }
+        
         try {
             setLoading(true);
             setError(null);
-            const response = await api.post('/subscriptions/allocate', {
-                videoId,
-                slices: newValue
-            });
-            setSlices(response.data.slices);
+            const success = await allocateSlices(videoId, newValue);
+            
+            if (success) {
+                setSlices(newValue);
+                setAnimating(true);
+                setTimeout(() => setAnimating(false), 1000);
+            } else {
+                setError('Failed to update slice allocation');
+            }
         } catch (err) {
             setError('Failed to update slice allocation');
             console.error('Error updating slices:', err);

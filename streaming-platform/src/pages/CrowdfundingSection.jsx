@@ -1,26 +1,26 @@
 import React, { useState, useEffect } from 'react';
 import VideoCard from '../components/common/VideoCard';
-import { api } from '../services/api';
+import { videoService } from '../services/api';
 import '../styles/sections.css';
 
 const CrowdfundingSection = () => {
-    const [projects, setProjects] = useState([]);
+    const [videos, setVideos] = useState([]);
     const [loading, setLoading] = useState(true);
     const [filter, setFilter] = useState('all');
 
     useEffect(() => {
-        const fetchCrowdfundingProjects = async () => {
+        const fetchCrowdfundingVideos = async () => {
             try {
-                const response = await api.get('/videos/crowdfunding');
-                setProjects(response.data);
+                const response = await videoService.getByGenre('crowdfunding');
+                setVideos(response.data);
             } catch (error) {
-                console.error('Error fetching crowdfunding projects:', error);
+                console.error('Error fetching crowdfunding videos:', error);
             } finally {
                 setLoading(false);
             }
         };
 
-        fetchCrowdfundingProjects();
+        fetchCrowdfundingVideos();
     }, []);
 
     const filterOptions = [
@@ -30,15 +30,10 @@ const CrowdfundingSection = () => {
         { value: 'ending', label: 'Ending Soon' }
     ];
 
-    const filteredProjects = projects.filter(project => {
+    const filteredVideos = videos.filter(video => {
         if (filter === 'all') return true;
-        return project.category === filter;
+        return video.category === filter;
     });
-
-    const calculateProgress = (project) => {
-        const progress = (project.current_amount / project.goal_amount) * 100;
-        return Math.min(progress, 100);
-    };
 
     if (loading) {
         return (
@@ -69,41 +64,22 @@ const CrowdfundingSection = () => {
             </div>
 
             <div className="video-grid">
-                {filteredProjects.map(project => (
-                    <div key={project.id} className="crowdfunding-card">
-                        <img 
-                            src={project.thumbnail_url} 
-                            alt={project.title}
-                            className="video-thumbnail"
+                {filteredVideos.length > 0 ? (
+                    filteredVideos.map(video => (
+                        <VideoCard
+                            key={video._id}
+                            video={video}
+                            className="crowdfunding-card"
                         />
-                        <div className="video-info">
-                            <h3 className="video-title">{project.title}</h3>
-                            <p className="video-creator">by {project.creator_name}</p>
-                            <p className="project-description">{project.description}</p>
-                            
-                            <div className="funding-progress">
-                                <div className="progress-bar">
-                                    <div 
-                                        className="progress-fill"
-                                        style={{ width: `${calculateProgress(project)}%` }}
-                                    ></div>
-                                </div>
-                                <div className="funding-stats">
-                                    <span>${project.current_amount} raised</span>
-                                    <span>{calculateProgress(project)}%</span>
-                                    <span>{project.days_left} days left</span>
-                                </div>
-                            </div>
-
-                            <button className="support-button">
-                                <span>Support Project</span>
-                            </button>
-                        </div>
+                    ))
+                ) : (
+                    <div className="no-content">
+                        <p>No projects found in this category</p>
                     </div>
-                ))}
+                )}
             </div>
 
-            {filteredProjects.length === 0 && (
+            {filteredVideos.length === 0 && (
                 <div className="no-content">
                     <p>No projects found in this category</p>
                 </div>

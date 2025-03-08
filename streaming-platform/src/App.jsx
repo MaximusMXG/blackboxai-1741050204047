@@ -2,6 +2,7 @@ import React from 'react';
 import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
 import { AuthProvider } from './context/auth-context.jsx';
 import Navbar from './components/common/Navbar';
+import Footer from './components/common/Footer';
 import Home from './pages/Home';
 import Auth from './pages/Auth';
 import Profile from './pages/Profile';
@@ -31,6 +32,7 @@ function App() {
               <Route path="/video/:id" element={<VideoPage />} />
             </Routes>
           </main>
+          <Footer />
         </div>
       </AuthProvider>
     </Router>

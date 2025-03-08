@@ -1,4 +1,4 @@
-const db = require('../db/database');
+const { sqliteDb } = require('../db/database');
 const User = require('./User');
 
 class SubscriptionSlice {
@@ -20,10 +20,10 @@ class SubscriptionSlice {
             const sql = `
                 INSERT INTO subscription_slices (user_id, video_id, slices)
                 VALUES (?, ?, ?)
-                ON CONFLICT(user_id, video_id) 
-                DO UPDATE SET slices = ?
+                ON CONFLICT(user_id, video_id)
+                DO UPDATE SET slices = ?, updated_at = CURRENT_TIMESTAMP
             `;
-            db.run(sql, [userId, videoId, slices, slices], function(err) {
+            sqliteDb.run(sql, [userId, videoId, slices, slices], function(err) {
                 if (err) {
                     reject(err);
                 } else {
@@ -41,7 +41,7 @@ class SubscriptionSlice {
     static getCurrentAllocation(userId, videoId) {
         return new Promise((resolve, reject) => {
             const sql = 'SELECT slices FROM subscription_slices WHERE user_id = ? AND video_id = ?';
-            db.get(sql, [userId, videoId], (err, row) => {
+            sqliteDb.get(sql, [userId, videoId], (err, row) => {
                 if (err) {
                     reject(err);
                 } else {
@@ -54,7 +54,7 @@ class SubscriptionSlice {
     static removeAllocation(userId, videoId) {
         return new Promise((resolve, reject) => {
             const sql = 'DELETE FROM subscription_slices WHERE user_id = ? AND video_id = ?';
-            db.run(sql, [userId, videoId], function(err) {
+            sqliteDb.run(sql, [userId, videoId], function(err) {
                 if (err) {
                     reject(err);
                 } else {
@@ -75,8 +75,8 @@ class SubscriptionSlice {
         }
 
         return new Promise((resolve, reject) => {
-            const sql = 'UPDATE subscription_slices SET slices = ? WHERE user_id = ? AND video_id = ?';
-            db.run(sql, [newSlices, userId, videoId], function(err) {
+            const sql = 'UPDATE subscription_slices SET slices = ?, updated_at = CURRENT_TIMESTAMP WHERE user_id = ? AND video_id = ?';
+            sqliteDb.run(sql, [newSlices, userId, videoId], function(err) {
                 if (err) {
                     reject(err);
                 } else {
@@ -93,21 +93,35 @@ class SubscriptionSlice {
     static getUserSubscriptions(userId) {
         return new Promise((resolve, reject) => {
             const sql = `
-                SELECT 
+                SELECT
                     s.*,
                     v.title as video_title,
                     v.creator as video_creator,
                     v.thumbnail_url
                 FROM subscription_slices s
-                JOIN videos v ON v.id = s.video_id
+                LEFT JOIN videos v ON v._id = s.video_id
                 WHERE s.user_id = ?
                 ORDER BY s.slices DESC
             `;
-            db.all(sql, [userId], (err, rows) => {
+            sqliteDb.all(sql, [userId], (err, rows) => {
                 if (err) {
                     reject(err);
                 } else {
                     resolve(rows);
+                }
+            });
+        });
+    }
+
+    // Helper method to clear all subscription slices - useful for testing/seeding
+    static clearAll() {
+        return new Promise((resolve, reject) => {
+            const sql = 'DELETE FROM subscription_slices';
+            sqliteDb.run(sql, [], function(err) {
+                if (err) {
+                    reject(err);
+                } else {
+                    resolve({ success: true, changes: this.changes });
                 }
             });
         });

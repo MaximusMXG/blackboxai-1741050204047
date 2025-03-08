@@ -7,11 +7,19 @@
     height: 100%;
     display: flex;
     flex-direction: column;
+    position: relative;
+}
+
+.video-card-inner {
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
 }
 
 .video-card:hover {
     transform: translateY(-5px);
-    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.2);
+    box-shadow: 0 8px 25px rgba(0, 0, 0, 0.25);
 }
 
 .video-link {
@@ -20,11 +28,34 @@
     width: 100%;
 }
 
+.thumbnail-container {
+    position: relative;
+    width: 100%;
+    overflow: hidden;
+}
+
 .video-thumbnail {
     width: 100%;
     height: 200px;
     object-fit: cover;
-    transition: transform 0.3s ease;
+    transition: transform 0.5s ease;
+}
+
+.video-link:hover .video-thumbnail {
+    transform: scale(1.05);
+}
+
+.video-duration {
+    position: absolute;
+    bottom: 10px;
+    right: 10px;
+    background-color: rgba(0, 0, 0, 0.75);
+    color: white;
+    padding: 2px 6px;
+    border-radius: 4px;
+    font-size: 0.8rem;
+    font-weight: 500;
+    z-index: 2;
 }
 
 .video-overlay {
@@ -39,6 +70,26 @@
     justify-content: center;
     opacity: 0;
     transition: opacity 0.3s ease;
+}
+
+.video-progress-container {
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    height: 4px;
+    background: rgba(0, 0, 0, 0.5);
+    z-index: 2;
+}
+
+.video-progress {
+    height: 100%;
+    background: linear-gradient(to right,
+        var(--pizza-red),
+        var(--pizza-orange),
+        var(--pizza-yellow)
+    );
+    transition: width 0.3s ease;
 }
 
 .play-icon {
@@ -74,13 +125,8 @@
     margin-bottom: 0.5rem;
     line-height: 1.4;
     display: -webkit-box;
-    display: -moz-box;
-    display: box;
     -webkit-box-orient: vertical;
-    -moz-box-orient: vertical;
-    box-orient: vertical;
     -webkit-line-clamp: 2;
-    -moz-line-clamp: 2;
     line-clamp: 2;
     overflow: hidden;
     text-overflow: ellipsis;
@@ -91,20 +137,15 @@
     font-size: 0.9rem;
     margin-bottom: 1rem;
     display: -webkit-box;
-    display: -moz-box;
-    display: box;
     -webkit-box-orient: vertical;
-    -moz-box-orient: vertical;
-    box-orient: vertical;
     -webkit-line-clamp: 1;
-    -moz-line-clamp: 1;
     line-clamp: 1;
     overflow: hidden;
     text-overflow: ellipsis;
 }
 
 /* Fallback for browsers that don't support line-clamp */
-@supports not ((line-clamp: 1) or (-webkit-line-clamp: 1)) {
+@supports not ((-webkit-line-clamp: 1)) {
     .video-title {
         display: block;
         max-height: 2.8em; /* line-height * 2 */
@@ -132,10 +173,44 @@
 
 .video-stats {
     display: flex;
+    align-items: center;
+    flex-wrap: wrap;
     gap: 0.5rem;
     color: var(--text-secondary);
     font-size: 0.85rem;
     margin-bottom: 1rem;
+}
+
+.view-count {
+    font-weight: 500;
+}
+
+.stat-divider {
+    color: rgba(255, 255, 255, 0.3);
+}
+
+.genre-badge {
+    color: rgba(255, 255, 255, 0.8);
+    font-weight: 500;
+    padding: 2px 8px;
+    border-radius: 4px;
+    background-color: rgba(255, 255, 255, 0.1);
+    text-transform: capitalize;
+}
+
+.genre-badge-indie .genre-badge {
+    background-color: rgba(152, 251, 152, 0.2);
+    color: rgb(152, 251, 152);
+}
+
+.genre-badge-mainstream .genre-badge {
+    background-color: rgba(255, 215, 0, 0.2);
+    color: rgb(255, 215, 0);
+}
+
+.genre-badge-crowdfunding .genre-badge {
+    background-color: rgba(255, 107, 107, 0.2);
+    color: rgb(255, 107, 107);
 }
 
 .video-actions {
@@ -174,26 +249,93 @@
     color: var(--primary-dark);
 }
 
+.more-tags {
+    background: rgba(255, 255, 255, 0.2);
+    color: var(--text-primary);
+}
+
+.featured-badge {
+    position: absolute;
+    top: 10px;
+    right: 10px;
+    background: linear-gradient(45deg,
+        var(--pizza-red),
+        var(--pizza-orange)
+    );
+    color: white;
+    padding: 0.3rem 0.75rem;
+    border-radius: 16px;
+    font-size: 0.8rem;
+    font-weight: bold;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
+    z-index: 3;
+}
+
+.featured-badge span {
+    display: flex;
+    align-items: center;
+    gap: 0.3rem;
+}
+
 /* Different card styles */
-.indie-card .video-info {
+.genre-badge-indie .video-info {
     background: linear-gradient(to bottom,
         rgba(152, 251, 152, 0.1),
         transparent
     );
 }
 
-.mainstream-card .video-info {
+.genre-badge-mainstream .video-info {
     background: linear-gradient(to bottom,
         rgba(255, 215, 0, 0.1),
         transparent
     );
 }
 
-.crowdfunding-card .video-info {
+.genre-badge-crowdfunding .video-info {
     background: linear-gradient(to bottom,
         rgba(255, 107, 107, 0.1),
         transparent
     );
+}
+
+.genre-badge-indie::before {
+    content: "";
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 4px;
+    height: 100%;
+    background: rgb(152, 251, 152);
+    opacity: 0.6;
+    border-top-left-radius: 12px;
+    border-bottom-left-radius: 12px;
+}
+
+.genre-badge-mainstream::before {
+    content: "";
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 4px;
+    height: 100%;
+    background: rgb(255, 215, 0);
+    opacity: 0.6;
+    border-top-left-radius: 12px;
+    border-bottom-left-radius: 12px;
+}
+
+.genre-badge-crowdfunding::before {
+    content: "";
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 4px;
+    height: 100%;
+    background: rgb(255, 107, 107);
+    opacity: 0.6;
+    border-top-left-radius: 12px;
+    border-bottom-left-radius: 12px;
 }
 
 @media (max-width: 768px) {

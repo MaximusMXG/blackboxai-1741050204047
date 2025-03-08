@@ -28,29 +28,69 @@ export { api };
 
 // User service
 export const userService = {
-    register: (username, email, password) => 
+    register: (username, email, password) =>
         api.post('/users/register', { username, email, password }),
     login: (email, password) =>
         api.post('/users/login', { email, password }),
-    getProfile: () => 
+    getProfile: () =>
         api.get('/users/profile'),
-    getSliceAllocation: (id) => 
+    updateProfile: (userData) =>
+        api.put('/users/profile', userData),
+    getSliceAllocation: (id) =>
         api.get(`/users/${id}/slices`),
+    getAllSliceAllocations: () =>
+        api.get('/users/slices/all'),
+    addSlices: (amount) =>
+        api.post('/users/slices/add', { amount }),
+    allocateSlices: (videoId, sliceCount) =>
+        api.post('/users/slices/allocate', { videoId, sliceCount }),
     logout: () => {
         localStorage.removeItem('token');
-    }
+    },
+    getWatchHistory: () =>
+        api.get('/users/history'),
+    addToWatchHistory: (videoId) =>
+        api.post('/users/history', { videoId }),
+    getRecommendedVideos: () =>
+        api.get('/users/recommended'),
+    getNotifications: () =>
+        api.get('/users/notifications'),
+    markNotificationAsRead: (notificationId) =>
+        api.put(`/users/notifications/${notificationId}/read`),
+    markAllNotificationsAsRead: () =>
+        api.put('/users/notifications/read/all')
 };
 
 // Video service
 export const videoService = {
-    create: (title, creator, thumbnail_url, genre) => 
-        api.post('/videos', { title, creator, thumbnail_url, genre }),
-    getAll: () => 
+    create: (videoData) =>
+        api.post('/videos', videoData),
+    getAll: () =>
         api.get('/videos'),
-    getById: (id) => 
+    getByGenre: (genre) =>
+        api.get(`/videos/genre/${genre}`),
+    getFeatured: () =>
+        api.get('/videos/featured'),
+    getById: (id) =>
         api.get(`/videos/${id}`),
-    getStats: (id) => 
+    getStats: (id) =>
         api.get(`/videos/${id}/stats`),
+    getTrending: () =>
+        api.get('/videos/trending'),
+    getRecommended: () =>
+        api.get('/videos/recommended'),
+    search: (query) =>
+        api.get(`/videos/search?q=${encodeURIComponent(query)}`),
+    getByTags: (tags) =>
+        api.get(`/videos/tags?tags=${encodeURIComponent(tags.join(','))}`),
+    addView: (id) =>
+        api.post(`/videos/${id}/view`),
+    rate: (id, rating) =>
+        api.post(`/videos/${id}/rate`, { rating }),
+    comment: (id, comment) =>
+        api.post(`/videos/${id}/comments`, { comment }),
+    getComments: (id) =>
+        api.get(`/videos/${id}/comments`),
 };
 
 // Subscription service

@@ -19,20 +19,23 @@ const Auth = () => {
         setLoading(true);
 
         try {
+            let success;
             if (isLogin) {
-                const success = await login(email, password);
-                if (success) {
-                    navigate('/');
-                }
+                success = await login(email, password);
             } else {
-                const success = await register({ username, email, password });
-                if (success) {
-                    navigate('/');
-                }
+                success = await register({username, email, password});
+            }
+            
+            if (success) {
+                // The login/register functions in the context will handle the page refresh
+                // Just ensure the user knows something is happening
+                setLoading(true);
+            } else {
+                setError('Authentication failed. Please check your credentials.');
+                setLoading(false);
             }
         } catch (err) {
             setError(err.message || 'An error occurred');
-        } finally {
             setLoading(false);
         }
     };

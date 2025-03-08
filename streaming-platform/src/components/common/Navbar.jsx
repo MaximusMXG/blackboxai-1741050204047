@@ -31,6 +31,7 @@ const Navbar = () => {
             <div className="navbar-container">
                 <div className="navbar-left">
                     <Link to="/" className="navbar-brand">
+                        <span className="text">🍕</span>
                         <span className="gradient-text">Slice</span>
                     </Link>
                     <div className="nav-links">

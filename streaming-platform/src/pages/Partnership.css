@@ -1,0 +1,166 @@
+.partnership-container {
+    max-width: 1200px;
+    margin: 2rem auto;
+    padding: 2rem;
+    color: var(--text-primary);
+    min-height: calc(100vh - 4rem);
+    display: flex;
+    flex-direction: column;
+    gap: 3rem;
+}
+
+.partnership-header {
+    text-align: center;
+    padding: 3rem 0;
+    background: linear-gradient(to right, var(--primary-green), var(--accent-green));
+    border-radius: 12px;
+    margin-bottom: 2rem;
+}
+
+.partnership-header h1 {
+    font-size: 3.5rem;
+    color: var(--primary-dark);
+    margin-bottom: 1rem;
+    font-weight: bold;
+    text-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.partnership-header p {
+    font-size: 1.4rem;
+    color: var(--primary-dark);
+    max-width: 600px;
+    margin: 0 auto;
+    opacity: 0.9;
+}
+
+.partnership-benefits {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+    gap: 2rem;
+    margin: 2rem 0;
+}
+
+.benefit-card {
+    background: var(--background-secondary);
+    padding: 2.5rem 2rem;
+    border-radius: 12px;
+    text-align: center;
+    transition: transform 0.2s ease-in-out;
+    border: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.benefit-card:hover {
+    transform: translateY(-5px);
+}
+
+.benefit-card h3 {
+    color: var(--primary-green);
+    margin-bottom: 1rem;
+    font-size: 1.5rem;
+    font-weight: bold;
+}
+
+.benefit-card p {
+    color: var(--text-secondary);
+    line-height: 1.6;
+    font-size: 1.1rem;
+}
+
+.partnership-form {
+    background: var(--background-secondary);
+    padding: 3rem;
+    border-radius: 12px;
+    max-width: 700px;
+    margin: 2rem auto;
+    border: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.partnership-form h2 {
+    color: var(--primary-green);
+    text-align: center;
+    margin-bottom: 2.5rem;
+    font-size: 2rem;
+    font-weight: bold;
+}
+
+.form-group {
+    margin-bottom: 1.8rem;
+}
+
+.form-group label {
+    display: block;
+    margin-bottom: 0.8rem;
+    color: var(--text-primary);
+    font-size: 1.1rem;
+    font-weight: 500;
+}
+
+.form-group input,
+.form-group textarea {
+    width: 100%;
+    padding: 1rem;
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    border-radius: 8px;
+    background: rgba(0, 0, 0, 0.2);
+    color: var(--text-primary);
+    font-size: 1rem;
+    transition: border-color 0.2s ease;
+}
+
+.form-group input:focus,
+.form-group textarea:focus {
+    outline: none;
+    border-color: var(--primary-green);
+}
+
+.form-group textarea {
+    min-height: 150px;
+    resize: vertical;
+    line-height: 1.6;
+}
+
+.submit-button {
+    width: 100%;
+    padding: 1.2rem;
+    background: var(--primary-green);
+    color: var(--primary-dark);
+    border: none;
+    border-radius: 8px;
+    font-size: 1.2rem;
+    font-weight: bold;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    margin-top: 1rem;
+}
+
+.submit-button:hover {
+    background: var(--primary-green-dark);
+    transform: translateY(-2px);
+}
+
+.submit-button:active {
+    transform: translateY(0);
+}
+
+@media (max-width: 768px) {
+    .partnership-container {
+        padding: 1rem;
+        margin: 1rem auto;
+    }
+
+    .partnership-header {
+        padding: 2rem 1rem;
+    }
+
+    .partnership-header h1 {
+        font-size: 2.5rem;
+    }
+
+    .partnership-header p {
+        font-size: 1.2rem;
+    }
+
+    .partnership-form {
+        padding: 2rem 1.5rem;
+    }
+}

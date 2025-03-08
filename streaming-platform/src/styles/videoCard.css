@@ -1,0 +1,215 @@
+.video-card {
+    background: var(--background-secondary);
+    border-radius: 12px;
+    overflow: hidden;
+    transition: all 0.3s ease;
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+}
+
+.video-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.2);
+}
+
+.video-link {
+    position: relative;
+    display: block;
+    width: 100%;
+}
+
+.video-thumbnail {
+    width: 100%;
+    height: 200px;
+    object-fit: cover;
+    transition: transform 0.3s ease;
+}
+
+.video-overlay {
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: rgba(0, 0, 0, 0.5);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    opacity: 0;
+    transition: opacity 0.3s ease;
+}
+
+.play-icon {
+    color: var(--text-primary);
+    font-size: 3rem;
+    transform: scale(0.8);
+    transition: transform 0.3s ease;
+}
+
+.video-link:hover .video-overlay {
+    opacity: 1;
+}
+
+.video-link:hover .play-icon {
+    transform: scale(1);
+}
+
+.video-info {
+    padding: 1.5rem;
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+}
+
+.video-title-link {
+    text-decoration: none;
+    color: inherit;
+}
+
+.video-title {
+    font-size: 1.2rem;
+    color: var(--text-primary);
+    margin-bottom: 0.5rem;
+    line-height: 1.4;
+    display: -webkit-box;
+    display: -moz-box;
+    display: box;
+    -webkit-box-orient: vertical;
+    -moz-box-orient: vertical;
+    box-orient: vertical;
+    -webkit-line-clamp: 2;
+    -moz-line-clamp: 2;
+    line-clamp: 2;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.video-creator {
+    color: var(--text-secondary);
+    font-size: 0.9rem;
+    margin-bottom: 1rem;
+    display: -webkit-box;
+    display: -moz-box;
+    display: box;
+    -webkit-box-orient: vertical;
+    -moz-box-orient: vertical;
+    box-orient: vertical;
+    -webkit-line-clamp: 1;
+    -moz-line-clamp: 1;
+    line-clamp: 1;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+/* Fallback for browsers that don't support line-clamp */
+@supports not ((line-clamp: 1) or (-webkit-line-clamp: 1)) {
+    .video-title {
+        display: block;
+        max-height: 2.8em; /* line-height * 2 */
+        position: relative;
+        overflow: hidden;
+        padding-right: 1rem;
+    }
+
+    .video-title::after {
+        content: "...";
+        position: absolute;
+        right: 0;
+        bottom: 0;
+        background: var(--background-secondary);
+        padding-left: 0.5rem;
+    }
+
+    .video-creator {
+        display: block;
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+    }
+}
+
+.video-stats {
+    display: flex;
+    gap: 0.5rem;
+    color: var(--text-secondary);
+    font-size: 0.85rem;
+    margin-bottom: 1rem;
+}
+
+.video-actions {
+    margin-top: auto;
+    padding-top: 1rem;
+    border-top: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.video-tags {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.5rem;
+    margin-top: 1rem;
+}
+
+.tag {
+    padding: 0.25rem 0.75rem;
+    background: rgba(255, 255, 255, 0.1);
+    border-radius: 16px;
+    font-size: 0.8rem;
+    color: var(--text-secondary);
+    transition: all 0.3s ease;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    max-width: 150px;
+}
+
+.tag:hover {
+    background: linear-gradient(45deg,
+        var(--pizza-red),
+        var(--pizza-orange),
+        var(--pizza-yellow),
+        var(--pizza-green)
+    );
+    color: var(--primary-dark);
+}
+
+/* Different card styles */
+.indie-card .video-info {
+    background: linear-gradient(to bottom,
+        rgba(152, 251, 152, 0.1),
+        transparent
+    );
+}
+
+.mainstream-card .video-info {
+    background: linear-gradient(to bottom,
+        rgba(255, 215, 0, 0.1),
+        transparent
+    );
+}
+
+.crowdfunding-card .video-info {
+    background: linear-gradient(to bottom,
+        rgba(255, 107, 107, 0.1),
+        transparent
+    );
+}
+
+@media (max-width: 768px) {
+    .video-thumbnail {
+        height: 180px;
+    }
+
+    .video-info {
+        padding: 1rem;
+    }
+
+    .video-title {
+        font-size: 1.1rem;
+    }
+
+    .video-tags {
+        margin-top: 0.75rem;
+    }
+}

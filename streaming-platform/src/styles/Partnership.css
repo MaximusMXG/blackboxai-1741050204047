@@ -1,0 +1,316 @@
+.partnership-container {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 2rem;
+}
+
+.partnership-header {
+    text-align: center;
+    margin-bottom: 3rem;
+    padding: 3rem;
+    background: var(--background-secondary);
+    border-radius: 16px;
+    border: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.partnership-header h1 {
+    font-size: 3rem;
+    margin-bottom: 1rem;
+    color: var(--text-primary);
+}
+
+.gradient-text {
+    background: linear-gradient(45deg,
+        var(--pizza-red),
+        var(--pizza-orange),
+        var(--pizza-yellow),
+        var(--pizza-green)
+    );
+    -webkit-background-clip: text;
+    background-clip: text;
+    -webkit-text-fill-color: transparent;
+    font-weight: bold;
+}
+
+.partnership-header p {
+    color: var(--text-secondary);
+    font-size: 1.2rem;
+    display: -webkit-box;
+    display: -moz-box;
+    display: box;
+    -webkit-box-orient: vertical;
+    -moz-box-orient: vertical;
+    box-orient: vertical;
+    -webkit-line-clamp: 2;
+    -moz-line-clamp: 2;
+    line-clamp: 2;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.partnership-content {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 2rem;
+}
+
+/* Benefits Section */
+.benefits-section {
+    padding: 2rem;
+    background: var(--background-secondary);
+    border-radius: 16px;
+    border: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.benefits-section h2 {
+    font-size: 1.8rem;
+    color: var(--text-primary);
+    margin-bottom: 2rem;
+}
+
+.benefits-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 1.5rem;
+}
+
+.benefit-card {
+    padding: 1.5rem;
+    background: rgba(0, 0, 0, 0.2);
+    border-radius: 12px;
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    transition: transform 0.3s ease;
+}
+
+.benefit-card:hover {
+    transform: translateY(-5px);
+}
+
+.benefit-icon {
+    font-size: 2rem;
+    margin-bottom: 1rem;
+}
+
+.benefit-card h3 {
+    color: var(--text-primary);
+    font-size: 1.2rem;
+    margin-bottom: 0.5rem;
+    display: -webkit-box;
+    display: -moz-box;
+    display: box;
+    -webkit-box-orient: vertical;
+    -moz-box-orient: vertical;
+    box-orient: vertical;
+    -webkit-line-clamp: 1;
+    -moz-line-clamp: 1;
+    line-clamp: 1;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.benefit-card p {
+    color: var(--text-secondary);
+    font-size: 0.9rem;
+    line-height: 1.5;
+    display: -webkit-box;
+    display: -moz-box;
+    display: box;
+    -webkit-box-orient: vertical;
+    -moz-box-orient: vertical;
+    box-orient: vertical;
+    -webkit-line-clamp: 2;
+    -moz-line-clamp: 2;
+    line-clamp: 2;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+/* Fallback for browsers that don't support line-clamp */
+@supports not ((line-clamp: 1) or (-webkit-line-clamp: 1)) {
+    .partnership-header p,
+    .benefit-card p {
+        max-height: 3em; /* line-height * 2 */
+        position: relative;
+        overflow: hidden;
+        padding-right: 1rem;
+    }
+
+    .partnership-header p::after,
+    .benefit-card p::after {
+        content: "...";
+        position: absolute;
+        right: 0;
+        bottom: 0;
+        background: var(--background-secondary);
+        padding-left: 0.5rem;
+    }
+
+    .benefit-card h3 {
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+    }
+}
+
+/* Application Section */
+.application-section {
+    padding: 2rem;
+    background: var(--background-secondary);
+    border-radius: 16px;
+    border: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.application-section h2 {
+    font-size: 1.8rem;
+    color: var(--text-primary);
+    margin-bottom: 2rem;
+}
+
+.partnership-form {
+    display: flex;
+    flex-direction: column;
+    gap: 1.5rem;
+}
+
+.form-group {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+}
+
+.form-group label {
+    color: var(--text-secondary);
+    font-size: 0.9rem;
+    font-weight: 500;
+}
+
+.form-group input,
+.form-group textarea,
+.form-group select {
+    padding: 0.875rem 1rem;
+    border-radius: 8px;
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    background: rgba(0, 0, 0, 0.2);
+    color: var(--text-primary);
+    font-size: 1rem;
+    transition: all 0.3s ease;
+    -webkit-appearance: none;
+    -moz-appearance: none;
+    appearance: none;
+}
+
+.form-group input:focus,
+.form-group textarea:focus,
+.form-group select:focus {
+    outline: none;
+    border-color: var(--pizza-green);
+    box-shadow: 0 0 0 3px rgba(152, 251, 152, 0.1);
+}
+
+.form-row {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 1rem;
+}
+
+.submit-button {
+    padding: 1rem;
+    border: none;
+    border-radius: 8px;
+    background: linear-gradient(45deg,
+        var(--pizza-red),
+        var(--pizza-orange),
+        var(--pizza-yellow),
+        var(--pizza-green)
+    );
+    color: var(--primary-dark);
+    font-weight: bold;
+    font-size: 1rem;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    position: relative;
+    overflow: hidden;
+}
+
+.submit-button::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: linear-gradient(45deg,
+        var(--pizza-yellow),
+        var(--pizza-green)
+    );
+    opacity: 0;
+    transition: opacity 0.3s ease;
+}
+
+.submit-button:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+}
+
+.submit-button:hover::before {
+    opacity: 1;
+}
+
+.submit-button span {
+    position: relative;
+    z-index: 1;
+}
+
+.submit-button:disabled {
+    opacity: 0.7;
+    cursor: not-allowed;
+    transform: none;
+}
+
+.error-message {
+    color: var(--pizza-red);
+    font-size: 0.9rem;
+    text-align: center;
+    padding: 0.75rem;
+    background: rgba(255, 107, 107, 0.1);
+    border-radius: 6px;
+    border: 1px solid rgba(255, 107, 107, 0.2);
+}
+
+.success-message {
+    color: var(--pizza-green);
+    font-size: 0.9rem;
+    text-align: center;
+    padding: 0.75rem;
+    background: rgba(152, 251, 152, 0.1);
+    border-radius: 6px;
+    border: 1px solid rgba(152, 251, 152, 0.2);
+}
+
+@media (max-width: 1024px) {
+    .partnership-content {
+        grid-template-columns: 1fr;
+    }
+}
+
+@media (max-width: 768px) {
+    .partnership-container {
+        padding: 1rem;
+    }
+
+    .partnership-header {
+        padding: 2rem 1rem;
+    }
+
+    .partnership-header h1 {
+        font-size: 2rem;
+    }
+
+    .benefits-grid {
+        grid-template-columns: 1fr;
+    }
+
+    .form-row {
+        grid-template-columns: 1fr;
+    }
+}

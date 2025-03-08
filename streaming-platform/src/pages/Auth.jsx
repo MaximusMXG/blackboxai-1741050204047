@@ -1,156 +1,121 @@
-import { useState } from 'react';
+import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { useAuth } from '../hooks/useAuth.jsx';
-import { FaUser, FaEnvelope, FaLock } from 'react-icons/fa';
+import { useAuth } from '../hooks/useAuth';
+import '../styles/auth.css';
 
 const Auth = () => {
     const [isLogin, setIsLogin] = useState(true);
-    const [formData, setFormData] = useState({
-        username: '',
-        email: '',
-        password: ''
-    });
+    const [username, setUsername] = useState('');
+    const [email, setEmail] = useState('');
+    const [password, setPassword] = useState('');
     const [error, setError] = useState('');
     const [loading, setLoading] = useState(false);
-    
     const { login, register } = useAuth();
     const navigate = useNavigate();
-
-    const validateForm = () => {
-        if (!formData.email || !formData.password) {
-            setError('Please fill in all required fields');
-            return false;
-        }
-        
-        if (!isLogin && !formData.username) {
-            setError('Username is required for registration');
-            return false;
-        }
-
-        const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-        if (!emailRegex.test(formData.email)) {
-            setError('Please enter a valid email address');
-            return false;
-        }
-
-        if (formData.password.length < 8) {
-            setError('Password must be at least 8 characters long');
-            return false;
-        }
-
-        return true;
-    };
 
     const handleSubmit = async (e) => {
         e.preventDefault();
         setError('');
-
-        if (!validateForm()) {
-            return;
-        }
-
         setLoading(true);
 
         try {
             if (isLogin) {
-                await login(formData.email, formData.password);
-                navigate('/');
+                const success = await login(email, password);
+                if (success) {
+                    navigate('/');
+                }
             } else {
-                await register(formData.username, formData.email, formData.password);
-                navigate('/');
+                const success = await register({ username, email, password });
+                if (success) {
+                    navigate('/');
+                }
             }
         } catch (err) {
-            const errorMessage = err.response?.data?.error || err.message || 'An error occurred';
-            setError(errorMessage);
+            setError(err.message || 'An error occurred');
         } finally {
             setLoading(false);
         }
     };
 
-    const handleChange = (e) => {
-        setFormData({
-            ...formData,
-            [e.target.name]: e.target.value
-        });
-    };
-
     return (
         <div className="auth-container">
-            <div className="auth-box">
-                <h2>{isLogin ? 'Sign In' : 'Create Account'}</h2>
-                
-                {error && (
-                    <div className="error-message" role="alert">
-                        <p>{error}</p>
+            <div className="auth-card">
+                <div className="auth-header">
+                    <h2>Welcome to <span className="gradient-text">Slice</span></h2>
+                    <p className="auth-subtitle">Your entertainment, perfectly portioned</p>
+                </div>
+
+                <div className="auth-tabs">
+                    <div 
+                        className={`auth-tab ${isLogin ? 'active' : ''}`}
+                        onClick={() => setIsLogin(true)}
+                    >
+                        <span>Login</span>
                     </div>
-                )}
-                
-                <form onSubmit={handleSubmit}>
+                    <div 
+                        className={`auth-tab ${!isLogin ? 'active' : ''}`}
+                        onClick={() => setIsLogin(false)}
+                    >
+                        <span>Register</span>
+                    </div>
+                </div>
+
+                <form className="auth-form" onSubmit={handleSubmit}>
                     {!isLogin && (
                         <div className="form-group">
-                            <FaUser className="input-icon" />
+                            <label htmlFor="username">Username</label>
                             <input
                                 type="text"
-                                name="username"
-                                placeholder="Username"
-                                value={formData.username}
-                                onChange={handleChange}
+                                id="username"
+                                value={username}
+                                onChange={(e) => setUsername(e.target.value)}
                                 required={!isLogin}
+                                minLength={3}
+                                autoComplete="username"
+                                placeholder="Choose a username"
                             />
                         </div>
                     )}
-                    
+
                     <div className="form-group">
-                        <FaEnvelope className="input-icon" />
+                        <label htmlFor="email">Email</label>
                         <input
                             type="email"
-                            name="email"
-                            placeholder="Email"
-                            value={formData.email}
-                            onChange={handleChange}
+                            id="email"
+                            value={email}
+                            onChange={(e) => setEmail(e.target.value)}
                             required
+                            autoComplete="email"
+                            placeholder="Enter your email"
                         />
                     </div>
-                    
+
                     <div className="form-group">
-                        <FaLock className="input-icon" />
+                        <label htmlFor="password">Password</label>
                         <input
                             type="password"
-                            name="password"
-                            placeholder="Password"
-                            value={formData.password}
-                            onChange={handleChange}
+                            id="password"
+                            value={password}
+                            onChange={(e) => setPassword(e.target.value)}
                             required
+                            minLength={6}
+                            autoComplete={isLogin ? "current-password" : "new-password"}
+                            placeholder={isLogin ? "Enter your password" : "Create a password"}
                         />
                     </div>
-                    
+
+                    {error && <div className="error-message">{error}</div>}
+
                     <button 
                         type="submit" 
-                        className={`btn-primary ${loading ? 'loading' : ''}`}
+                        className="auth-button"
                         disabled={loading}
                     >
-                        {loading ? (
-                            <>
-                                <span className="loading-spinner"></span>
-                                <span>Please wait...</span>
-                            </>
-                        ) : (
-                            isLogin ? 'Sign In' : 'Create Account'
-                        )}
+                        <span>
+                            {loading ? 'Processing...' : (isLogin ? 'Login' : 'Register')}
+                        </span>
                     </button>
                 </form>
-                
-                <div className="auth-switch">
-                    <p>
-                        {isLogin ? "Don't have an account?" : "Already have an account?"}
-                        <button 
-                            className="link-button"
-                            onClick={() => setIsLogin(!isLogin)}
-                        >
-                            {isLogin ? 'Sign Up' : 'Sign In'}
-                        </button>
-                    </p>
-                </div>
             </div>
         </div>
     );

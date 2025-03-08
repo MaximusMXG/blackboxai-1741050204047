@@ -1,107 +1,85 @@
-import { useState, useEffect } from 'react';
-import { FaPlay, FaInfoCircle, FaGamepad, FaFilm } from 'react-icons/fa';
+import React, { useState, useEffect } from 'react';
 import VideoCard from '../components/common/VideoCard';
-import { videoService } from '../services/api';
+import { api } from '../services/api';
+import '../styles/sections.css';
 
 const IndieSection = () => {
-  const [videos, setVideos] = useState([]);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState(null);
+    const [videos, setVideos] = useState([]);
+    const [loading, setLoading] = useState(true);
+    const [filter, setFilter] = useState('all');
 
-  useEffect(() => {
-    const fetchVideos = async () => {
-      try {
-        const response = await videoService.getAll();
-        // Filter only indie videos
-        const indieVideos = response.data.filter(video => video.genre === 'indie');
-        setVideos(indieVideos);
-        setLoading(false);
-      } catch (err) {
-        console.error('Error fetching videos:', err);
-        setError('Failed to load videos');
-        setLoading(false);
-      }
-    };
+    useEffect(() => {
+        const fetchIndieVideos = async () => {
+            try {
+                const response = await api.get('/videos/indie');
+                setVideos(response.data);
+            } catch (error) {
+                console.error('Error fetching indie videos:', error);
+            } finally {
+                setLoading(false);
+            }
+        };
 
-    fetchVideos();
-  }, []);
+        fetchIndieVideos();
+    }, []);
 
-  if (loading) return <div>Loading...</div>;
-  if (error) return <div className="error-message">{error}</div>;
+    const filterOptions = [
+        { value: 'all', label: 'All' },
+        { value: 'trending', label: 'Trending' },
+        { value: 'new', label: 'New Releases' },
+        { value: 'top', label: 'Top Rated' }
+    ];
 
-  return (
-    <div>
-      {/* Featured Indie Content Hero */}
-      <section className="hero-section">
-        <div className="hero-overlay" />
-        <div className="hero-content">
-          <div style={{ maxWidth: '600px' }}>
-            <div style={{ 
-              display: 'inline-flex',
-              alignItems: 'center',
-              gap: '0.5rem',
-              backgroundColor: 'rgba(152, 251, 152, 0.2)',
-              padding: '0.5rem 1rem',
-              borderRadius: '1rem',
-              marginBottom: '1rem'
-            }}>
-              <FaGamepad style={{ color: 'var(--primary-green)' }} />
-              <span style={{ color: 'var(--primary-green)' }}>Featured Indie Game</span>
+    const filteredVideos = videos.filter(video => {
+        if (filter === 'all') return true;
+        return video.category === filter;
+    });
+
+    if (loading) {
+        return (
+            <div className="section-loading">
+                <div className="loading-spinner"></div>
+                <p>Loading indie content...</p>
             </div>
-            <h1 style={{ 
-              fontSize: '3.5rem',
-              fontWeight: 'bold',
-              marginBottom: '1rem',
-              lineHeight: '1.2'
-            }}>
-              Pixel Adventure
-            </h1>
-            <p style={{ 
-              fontSize: '1.25rem',
-              marginBottom: '0.5rem',
-              color: 'var(--text-secondary)'
-            }}>
-              By Indie Studio A • Platformer • Single Player
-            </p>
-            <p style={{ 
-              fontSize: '1rem',
-              marginBottom: '2rem',
-              color: 'var(--text-secondary)'
-            }}>
-              Embark on a nostalgic journey through beautifully crafted pixel art worlds.
-              A love letter to classic platformers with modern game design.
-            </p>
-            <div style={{ display: 'flex', gap: '1rem' }}>
-              <button className="btn-primary">
-                <FaPlay style={{ marginRight: '0.5rem' }} />
-                Play Demo
-              </button>
-              <button className="btn-secondary">
-                <FaInfoCircle style={{ marginRight: '0.5rem' }} />
-                More Info
-              </button>
-            </div>
-          </div>
-        </div>
-      </section>
+        );
+    }
 
-      {/* Indie Videos Grid */}
-      <section>
-        <h2 className="section-title">
-          <FaGamepad style={{ marginRight: '0.5rem' }} />
-          Indie Games
-        </h2>
-        <div className="content-grid">
-          {videos.map((video) => (
-            <VideoCard 
-              key={video._id} 
-              video={video}
-            />
-          ))}
+    return (
+        <div className="section-container">
+            <div className="section-header">
+                <h1>Indie <span className="gradient-text">Gems</span></h1>
+                <p>Discover and support independent creators</p>
+            </div>
+
+            <div className="filter-bar">
+                {filterOptions.map(option => (
+                    <button
+                        key={option.value}
+                        className={`filter-button ${filter === option.value ? 'active' : ''}`}
+                        onClick={() => setFilter(option.value)}
+                    >
+                        <span>{option.label}</span>
+                    </button>
+                ))}
+            </div>
+
+            <div className="video-grid">
+                {filteredVideos.map(video => (
+                    <VideoCard
+                        key={video.id}
+                        video={video}
+                        className="indie-card"
+                    />
+                ))}
+            </div>
+
+            {filteredVideos.length === 0 && (
+                <div className="no-content">
+                    <p>No videos found in this category</p>
+                </div>
+            )}
         </div>
-      </section>
-    </div>
-  );
+    );
 };
 
 export default IndieSection;

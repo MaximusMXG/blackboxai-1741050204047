@@ -1,0 +1,241 @@
+.profile-container {
+    max-width: 1200px;
+    margin: 2rem auto;
+    padding: 2rem;
+    color: var(--text-primary);
+}
+
+.profile-header {
+    text-align: center;
+    margin-bottom: 3rem;
+    padding: 2rem;
+    background: var(--background-secondary);
+    border-radius: 16px;
+    border: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.profile-header h2 {
+    font-size: 2.5rem;
+    margin-bottom: 1rem;
+}
+
+.gradient-text {
+    background: linear-gradient(45deg,
+        var(--pizza-red),
+        var(--pizza-orange),
+        var(--pizza-yellow),
+        var(--pizza-green)
+    );
+    -webkit-background-clip: text;
+    background-clip: text;
+    -webkit-text-fill-color: transparent;
+    font-weight: bold;
+}
+
+.profile-header p {
+    color: var(--text-secondary);
+    font-size: 1.1rem;
+}
+
+.profile-tabs {
+    display: flex;
+    gap: 1rem;
+    margin-bottom: 2rem;
+    background: var(--background-secondary);
+    padding: 0.5rem;
+    border-radius: 12px;
+}
+
+.tab-button {
+    flex: 1;
+    padding: 1rem;
+    border: none;
+    background: transparent;
+    color: var(--text-secondary);
+    font-size: 1rem;
+    cursor: pointer;
+    border-radius: 8px;
+    transition: all 0.3s ease;
+    position: relative;
+    overflow: hidden;
+}
+
+.tab-button.active {
+    color: var(--primary-dark);
+}
+
+.tab-button.active::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: linear-gradient(45deg,
+        var(--pizza-red),
+        var(--pizza-orange),
+        var(--pizza-yellow),
+        var(--pizza-green)
+    );
+    border-radius: 8px;
+    z-index: 0;
+}
+
+.tab-button span {
+    position: relative;
+    z-index: 1;
+}
+
+.profile-content {
+    background: var(--background-secondary);
+    padding: 2rem;
+    border-radius: 16px;
+    border: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+/* Subscriptions Tab */
+.slice-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+    gap: 1.5rem;
+    margin-top: 2rem;
+}
+
+.slice-card {
+    background: rgba(0, 0, 0, 0.2);
+    border-radius: 12px;
+    padding: 1.5rem;
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    transition: transform 0.3s ease;
+}
+
+.slice-card:hover {
+    transform: translateY(-5px);
+}
+
+.slice-info h4 {
+    color: var(--text-primary);
+    margin-bottom: 0.5rem;
+    font-size: 1.2rem;
+}
+
+.slice-info p {
+    color: var(--text-secondary);
+    margin-bottom: 1rem;
+}
+
+.slice-actions {
+    display: flex;
+    justify-content: flex-end;
+}
+
+.btn-adjust {
+    padding: 0.75rem 1.5rem;
+    border: none;
+    border-radius: 8px;
+    background: linear-gradient(45deg,
+        var(--pizza-yellow),
+        var(--pizza-green)
+    );
+    color: var(--primary-dark);
+    font-weight: bold;
+    cursor: pointer;
+    transition: all 0.3s ease;
+}
+
+.btn-adjust:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+}
+
+/* Settings Tab */
+.settings-form {
+    max-width: 600px;
+    margin: 0 auto;
+}
+
+.form-group {
+    margin-bottom: 1.5rem;
+}
+
+.form-group label {
+    display: block;
+    margin-bottom: 0.5rem;
+    color: var(--text-secondary);
+}
+
+.form-group input {
+    width: 100%;
+    padding: 0.875rem 1rem;
+    border-radius: 8px;
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    background: rgba(0, 0, 0, 0.2);
+    color: var(--text-primary);
+    font-size: 1rem;
+    transition: all 0.3s ease;
+}
+
+.form-group input:focus {
+    outline: none;
+    border-color: var(--pizza-green);
+    box-shadow: 0 0 0 3px rgba(152, 251, 152, 0.1);
+}
+
+.form-group input:disabled {
+    opacity: 0.7;
+    cursor: not-allowed;
+}
+
+.btn-save {
+    width: 100%;
+    padding: 1rem;
+    border: none;
+    border-radius: 8px;
+    background: linear-gradient(45deg,
+        var(--pizza-red),
+        var(--pizza-orange),
+        var(--pizza-yellow),
+        var(--pizza-green)
+    );
+    color: var(--primary-dark);
+    font-weight: bold;
+    font-size: 1rem;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    margin-top: 1rem;
+}
+
+.btn-save:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+}
+
+.profile-loading {
+    text-align: center;
+    padding: 3rem;
+    color: var(--text-secondary);
+    font-size: 1.2rem;
+}
+
+@media (max-width: 768px) {
+    .profile-container {
+        padding: 1rem;
+        margin: 1rem;
+    }
+
+    .profile-header {
+        padding: 1.5rem;
+    }
+
+    .profile-header h2 {
+        font-size: 2rem;
+    }
+
+    .slice-grid {
+        grid-template-columns: 1fr;
+    }
+
+    .profile-tabs {
+        flex-direction: column;
+    }
+}

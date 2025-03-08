@@ -30,7 +30,7 @@ export { api };
 export const userService = {
     register: (username, email, password) => 
         api.post('/users/register', { username, email, password }),
-    login: (email, password) => 
+    login: (email, password) =>
         api.post('/users/login', { email, password }),
     getProfile: () => 
         api.get('/users/profile'),

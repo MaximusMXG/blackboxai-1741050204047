@@ -1,82 +1,56 @@
-import { useState } from 'react';
-import { FaPlay, FaInfoCircle } from 'react-icons/fa';
+import React from 'react';
 import { Link } from 'react-router-dom';
+import { useAuth } from '../../hooks/useAuth.jsx';
 import SliceAllocation from './SliceAllocation';
+import '../../styles/videoCard.css';
 
-const VideoCard = ({ video, userId }) => {
-    const [showDetails, setShowDetails] = useState(false);
-
-    const handleAllocationChange = (newSlices) => {
-        console.log(`Updated allocation for video ${video._id}: ${newSlices} slices`);
-    };
+const VideoCard = ({ video, className = '' }) => {
+    const { user } = useAuth();
 
     return (
-        <div className="video-card card">
-            <div style={{ 
-                aspectRatio: '16/9',
-                backgroundColor: '#2a2a2a',
-                position: 'relative',
-                cursor: 'pointer'
-            }} onClick={() => setShowDetails(!showDetails)}>
-                {video.thumbnail_url && (
-                    <img 
-                        src={video.thumbnail_url} 
-                        alt={video.title}
-                        style={{
-                            width: '100%',
-                            height: '100%',
-                            objectFit: 'cover'
-                        }}
-                    />
-                )}
-                <div style={{
-                    position: 'absolute',
-                    bottom: 0,
-                    left: 0,
-                    right: 0,
-                    padding: '4rem 1rem 1rem',
-                    background: 'linear-gradient(to top, rgba(0,0,0,0.8) 0%, transparent 100%)'
-                }}>
-                    <h3 style={{ marginBottom: '0.5rem' }}>
-                        <Link to={`/videos/${video._id}`} style={{ color: 'inherit', textDecoration: 'none' }}>
-                            {video.title}
-                        </Link>
-                    </h3>
-                    <div style={{ 
-                        display: 'flex', 
-                        gap: '0.5rem',
-                        color: 'var(--text-secondary)',
-                        fontSize: '0.875rem'
-                    }}>
-                        <span>{video.genre}</span>
-                        <span>•</span>
-                        <span>{video.creator}</span>
-                    </div>
+        <div className={`video-card ${className}`}>
+            <Link to={`/video/${video.id}`} className="video-link">
+                <img 
+                    src={video.thumbnail_url} 
+                    alt={video.title} 
+                    className="video-thumbnail"
+                />
+                <div className="video-overlay">
+                    <span className="play-icon">▶</span>
                 </div>
-            </div>
+            </Link>
+            
+            <div className="video-info">
+                <Link to={`/video/${video.id}`} className="video-title-link">
+                    <h3 className="video-title">{video.title}</h3>
+                </Link>
+                <p className="video-creator">{video.creator_name}</p>
+                
+                <div className="video-stats">
+                    <span>{video.views} views</span>
+                    <span>•</span>
+                    <span>{video.duration}</span>
+                </div>
 
-            {showDetails && (
-                <div className="video-details">
+                {user && (
                     <div className="video-actions">
-                        <button className="btn-primary btn-sm">
-                            <FaPlay style={{ marginRight: '0.5rem' }} />
-                            Play
-                        </button>
-                        <button className="btn-secondary btn-sm">
-                            <FaInfoCircle style={{ marginRight: '0.5rem' }} />
-                            Info
-                        </button>
-                    </div>
-                    
-                    {userId && (
                         <SliceAllocation 
-                            userId={userId}
-                            videoId={video._id}
-                            onAllocationChange={handleAllocationChange}
+                            videoId={video.id} 
+                            currentSlices={video.user_slices || 0}
                         />
-                    )}
-                </div>
-            )}
+                    </div>
+                )}
+
+                {video.tags && video.tags.length > 0 && (
+                    <div className="video-tags">
+                        {video.tags.map((tag, index) => (
+                            <span key={index} className="tag">
+                                {tag}
+                            </span>
+                        ))}
+                    </div>
+                )}
+            </div>
         </div>
     );
 };

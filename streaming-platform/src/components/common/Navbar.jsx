@@ -1,45 +1,97 @@
-import { Link } from 'react-router-dom';
-import { FaFilm, FaGamepad, FaCrown, FaHandHoldingUsd } from 'react-icons/fa';
+import React, { useState, useRef, useEffect } from 'react';
+import { Link, useNavigate } from 'react-router-dom';
+import { useAuth } from '../../hooks/useAuth';
+import './Navbar.css';
 
 const Navbar = () => {
-  return (
-    <nav className="nav">
-      <div className="container nav-content">
-        {/* Logo and Brand */}
-        <Link to="/" className="nav-link">
-          <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
-            <FaFilm style={{ color: 'var(--primary-red)' }} size={24} />
-            <FaGamepad style={{ color: 'var(--primary-green)' }} size={24} />
-            <span style={{ fontSize: '1.5rem', fontWeight: 'bold' }}>StreamHub</span>
-          </div>
-        </Link>
+    const { user, logout } = useAuth();
+    const navigate = useNavigate();
+    const [dropdownOpen, setDropdownOpen] = useState(false);
+    const dropdownRef = useRef(null);
 
-        {/* Navigation Links */}
-        <div className="nav-links">
-          <Link to="/mainstream" className="nav-link">
-            <FaCrown />
-            <span>Mainstream</span>
-          </Link>
-          
-          <Link to="/indie" className="nav-link">
-            <FaGamepad />
-            <span>Indie</span>
-          </Link>
-          
-          <Link to="/crowdfunding" className="nav-link">
-            <FaHandHoldingUsd />
-            <span>Crowdfunding</span>
-          </Link>
+    useEffect(() => {
+        const handleClickOutside = (event) => {
+            if (dropdownRef.current && !dropdownRef.current.contains(event.target)) {
+                setDropdownOpen(false);
+            }
+        };
 
-          {/* Auth Buttons */}
-          <div style={{ display: 'flex', gap: '1rem', marginLeft: '2rem' }}>
-            <button className="btn-secondary">Sign In</button>
-            <button className="btn-primary">Sign Up</button>
-          </div>
-        </div>
-      </div>
-    </nav>
-  );
+        document.addEventListener('mousedown', handleClickOutside);
+        return () => document.removeEventListener('mousedown', handleClickOutside);
+    }, []);
+
+    const handleLogout = () => {
+        logout();
+        setDropdownOpen(false);
+        navigate('/');
+    };
+
+    return (
+        <nav className="navbar">
+            <div className="navbar-container">
+                <div className="navbar-left">
+                    <Link to="/" className="navbar-brand">
+                        <span className="gradient-text">Slice</span>
+                    </Link>
+                    <div className="nav-links">
+                        <Link to="/indie" className="nav-link">Indie</Link>
+                        <Link to="/mainstream" className="nav-link">Mainstream</Link>
+                        <Link to="/crowdfunding" className="nav-link">Crowdfunding</Link>
+                    </div>
+                </div>
+
+                <div className="navbar-right">
+                    {user ? (
+                        <>
+                            <Link to="/partnership" className="nav-link">Partnership</Link>
+                            <div className="user-menu" ref={dropdownRef}>
+                                <button 
+                                    className="profile-button"
+                                    onClick={() => setDropdownOpen(!dropdownOpen)}
+                                >
+                                    <img 
+                                        src={user.avatar || '/default-avatar.png'} 
+                                        alt={user.username}
+                                        className="profile-avatar"
+                                    />
+                                    <span className="profile-name">{user.username}</span>
+                                </button>
+                                
+                                {dropdownOpen && (
+                                    <div className="dropdown-menu">
+                                        <Link 
+                                            to="/profile" 
+                                            className="dropdown-item"
+                                            onClick={() => setDropdownOpen(false)}
+                                        >
+                                            Profile
+                                        </Link>
+                                        <Link 
+                                            to="/settings" 
+                                            className="dropdown-item"
+                                            onClick={() => setDropdownOpen(false)}
+                                        >
+                                            Settings
+                                        </Link>
+                                        <button 
+                                            onClick={handleLogout}
+                                            className="dropdown-item logout-button"
+                                        >
+                                            Logout
+                                        </button>
+                                    </div>
+                                )}
+                            </div>
+                        </>
+                    ) : (
+                        <Link to="/auth" className="auth-button">
+                            Sign In
+                        </Link>
+                    )}
+                </div>
+            </div>
+        </nav>
+    );
 };
 
 export default Navbar;

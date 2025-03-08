@@ -1,86 +1,97 @@
-import { useState, useEffect } from 'react';
-import { FaPizzaSlice } from 'react-icons/fa';
-import api from '../../services/api';
+import React, { useState } from 'react';
+import { api } from '../../services/api';
+import '../../styles/sliceAllocation.css';
 
-const SliceAllocation = ({ userId, videoId, onAllocationChange }) => {
-    const [slices, setSlices] = useState(0);
-    const [maxSlices, setMaxSlices] = useState(8);
-    const [availableSlices, setAvailableSlices] = useState(8);
-    const [loading, setLoading] = useState(true);
+const SliceAllocation = ({ videoId, currentSlices = 0 }) => {
+    const [slices, setSlices] = useState(currentSlices);
+    const [isAdjusting, setIsAdjusting] = useState(false);
+    const [loading, setLoading] = useState(false);
     const [error, setError] = useState(null);
-
-    useEffect(() => {
-        const loadAllocation = async () => {
-            try {
-                // Get user's total slice allocation
-                const userSlices = await api.user.getSliceAllocation(userId);
-                setAvailableSlices(userSlices.data.available_slices);
-                
-                // Get current allocation for this video
-                const currentAllocation = await api.subscription.getCurrentAllocation(userId, videoId);
-                setSlices(currentAllocation.data.slices);
-                
-                setLoading(false);
-            } catch (err) {
-                setError('Failed to load slice allocation');
-                setLoading(false);
-            }
-        };
-
-        loadAllocation();
-    }, [userId, videoId]);
 
     const handleSliceChange = async (newValue) => {
         try {
-            if (newValue >= 0 && newValue <= maxSlices) {
-                const response = await api.subscription.allocateSlices(userId, videoId, newValue);
-                setSlices(newValue);
-                if (onAllocationChange) {
-                    onAllocationChange(newValue);
-                }
-            }
+            setLoading(true);
+            setError(null);
+            const response = await api.post('/subscriptions/allocate', {
+                videoId,
+                slices: newValue
+            });
+            setSlices(response.data.slices);
         } catch (err) {
             setError('Failed to update slice allocation');
+            console.error('Error updating slices:', err);
+        } finally {
+            setLoading(false);
         }
     };
 
-    if (loading) return <div>Loading...</div>;
-    if (error) return <div className="error-message">{error}</div>;
+    const renderSliceIndicator = () => {
+        return Array.from({ length: 8 }, (_, i) => (
+            <div 
+                key={i}
+                className={`slice-indicator ${i < slices ? 'active' : ''}`}
+                style={{
+                    transform: `rotate(${45 * i}deg)`,
+                    '--delay': `${i * 0.1}s`
+                }}
+            >
+                <div className="slice-fill"></div>
+            </div>
+        ));
+    };
 
     return (
         <div className="slice-allocation">
-            <h3>Support with Slices</h3>
-            <div className="slice-counter">
-                <button 
-                    className="slice-btn"
-                    onClick={() => handleSliceChange(slices - 1)}
-                    disabled={slices <= 0}
-                >
-                    -
-                </button>
-                <div className="slice-display">
-                    {[...Array(maxSlices)].map((_, i) => (
-                        <FaPizzaSlice 
-                            key={i}
-                            className={i < slices ? 'slice active' : 'slice'}
-                            size={24}
-                        />
-                    ))}
+            <div 
+                className={`slice-display ${isAdjusting ? 'adjusting' : ''}`}
+                onClick={() => setIsAdjusting(true)}
+            >
+                <div className="slice-circle">
+                    {renderSliceIndicator()}
+                    <span className="slice-count">{slices}</span>
                 </div>
-                <button 
-                    className="slice-btn"
-                    onClick={() => handleSliceChange(slices + 1)}
-                    disabled={slices >= maxSlices || slices >= availableSlices}
-                >
-                    +
-                </button>
+                <span className="slice-label">Slices</span>
             </div>
-            <p className="slice-info">
-                {slices} out of {maxSlices} slices allocated
-                <br />
-                {availableSlices} slices available
-            </p>
-            {error && <p className="error-message">{error}</p>}
+
+            {isAdjusting && (
+                <div className="slice-adjuster">
+                    <div className="adjuster-header">
+                        <h3>Adjust Your Slices</h3>
+                        <button 
+                            className="close-button"
+                            onClick={() => setIsAdjusting(false)}
+                        >
+                            ×
+                        </button>
+                    </div>
+
+                    <div className="slice-controls">
+                        <input
+                            type="range"
+                            min="0"
+                            max="8"
+                            value={slices}
+                            onChange={(e) => handleSliceChange(parseInt(e.target.value))}
+                            className="slice-slider"
+                            disabled={loading}
+                        />
+                        <div className="slice-value">
+                            <span>{slices} slices</span>
+                        </div>
+                    </div>
+
+                    {error && (
+                        <div className="slice-error">
+                            {error}
+                        </div>
+                    )}
+
+                    <div className="slice-info">
+                        <p>Allocate slices to support this content</p>
+                        <small>You can adjust this at any time</small>
+                    </div>
+                </div>
+            )}
         </div>
     );
 };

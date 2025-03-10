@@ -91,6 +91,10 @@ export const videoService = {
         api.post(`/videos/${id}/comments`, { comment }),
     getComments: (id) =>
         api.get(`/videos/${id}/comments`),
+    updateProgress: (id, progressData) =>
+        api.post(`/videos/${id}/progress`, progressData),
+    getWatchProgress: (id) =>
+        api.get(`/users/history/${id}`),
 };
 
 // Subscription service
@@ -107,8 +111,72 @@ export const subscriptionService = {
         api.get(`/subscriptions/user/${userId}`),
 };
 
+// Partnership service
+export const partnershipService = {
+    apply: (data) =>
+        api.post('/partnerships/apply', data),
+    getUserApplications: () =>
+        api.get('/partnerships/user'),
+    getAll: () =>
+        api.get('/partnerships'),
+    getByStatus: (status) =>
+        api.get(`/partnerships/status/${status}`),
+    getById: (id) =>
+        api.get(`/partnerships/${id}`),
+    approve: (id) =>
+        api.put(`/partnerships/${id}/approve`),
+    reject: (id, rejectionReason) =>
+        api.put(`/partnerships/${id}/reject`, { rejectionReason }),
+    checkPartnerStatus: async () => {
+        try {
+            const response = await api.get('/partnerships/user');
+            // Check if any application is approved
+            return response.data.some(app => app.status === 'approved');
+        } catch (err) {
+            console.error('Error checking partner status:', err);
+            return false;
+        }
+    }
+};
+
+// Brand service
+export const brandService = {
+    getAll: (page = 1, limit = 10) =>
+        api.get(`/brands?page=${page}&limit=${limit}`),
+    getByCategory: (category, page = 1, limit = 10) =>
+        api.get(`/brands/category/${category}?page=${page}&limit=${limit}`),
+    getPopular: (limit = 10) =>
+        api.get(`/brands/popular?limit=${limit}`),
+    search: (query) =>
+        api.get(`/brands/search?q=${encodeURIComponent(query)}`),
+    getBySlug: (slug) =>
+        api.get(`/brands/slug/${slug}`),
+    getById: (id) =>
+        api.get(`/brands/${id}`),
+    getVideos: (id, page = 1, limit = 10) =>
+        api.get(`/brands/${id}/videos?page=${page}&limit=${limit}`),
+    getFollowers: (id, page = 1, limit = 20) =>
+        api.get(`/brands/${id}/followers?page=${page}&limit=${limit}`),
+    create: (brandData) =>
+        api.post('/brands', brandData),
+    update: (id, brandData) =>
+        api.put(`/brands/${id}`, brandData),
+    follow: (id) =>
+        api.post(`/brands/${id}/follow`),
+    unfollow: (id) =>
+        api.post(`/brands/${id}/unfollow`),
+    addMember: (id, memberData) =>
+        api.post(`/brands/${id}/members`, memberData),
+    removeMember: (id, userId) =>
+        api.delete(`/brands/${id}/members/${userId}`),
+    getAnalytics: (id, period = '30days') =>
+        api.get(`/brands/${id}/analytics?period=${period}`)
+};
+
 export default {
     user: userService,
     video: videoService,
-    subscription: subscriptionService
+    subscription: subscriptionService,
+    partnership: partnershipService,
+    brand: brandService
 };

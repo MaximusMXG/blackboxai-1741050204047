@@ -1,0 +1,467 @@
+/* Pizza Slice Allocator Component */
+.pizza-slice-allocator {
+    position: relative;
+}
+
+/* Pizza Display */
+.pizza-display {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 10px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    position: relative;
+}
+
+.pizza-display:hover .pizza-plate {
+    transform: translateY(-5px);
+    box-shadow: 0 10px 20px rgba(0, 0, 0, 0.2);
+}
+
+.pizza-display.adjusting .pizza-plate {
+    transform: scale(1.05);
+}
+
+.pizza-display.error .pizza-plate {
+    animation: shake 0.4s ease-in-out;
+}
+
+@keyframes shake {
+    0%, 100% { transform: translateX(0); }
+    25% { transform: translateX(-5px); }
+    50% { transform: translateX(5px); }
+    75% { transform: translateX(-5px); }
+}
+
+.error-message {
+    position: absolute;
+    bottom: -20px;
+    font-size: 0.75rem;
+    color: var(--pizza-red);
+    background: rgba(255, 107, 107, 0.1);
+    padding: 0.25rem 0.5rem;
+    border-radius: 4px;
+    white-space: nowrap;
+    animation: fadeIn 0.3s ease;
+}
+
+@keyframes fadeIn {
+    from { opacity: 0; transform: translateY(10px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+
+/* Pizza Elements */
+.pizza-plate {
+    width: 80px;
+    height: 80px;
+    background: rgba(255, 255, 255, 0.05);
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+    transition: all 0.3s ease;
+}
+
+.pizza {
+    width: 70px;
+    height: 70px;
+    background: var(--pizza-crust, #E6C27F);
+    border-radius: 50%;
+    position: relative;
+    overflow: hidden;
+}
+
+.pizza.mini {
+    width: 100px;
+    height: 100px;
+}
+
+/* Pizza Slices */
+.pizza-slice {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 50%;
+    height: 50%;
+    transform-origin: bottom right;
+    opacity: 0.4;
+    transition: opacity 0.3s ease, filter 0.3s ease;
+}
+
+.pizza-slice.active {
+    opacity: 1;
+    filter: drop-shadow(0 0 3px rgba(255, 255, 255, 0.2));
+}
+
+.slice-fill {
+    width: 100%;
+    height: 100%;
+    background: var(--slice-color, #FF6B6B);
+    clip-path: polygon(0 0, 100% 0, 0 100%);
+}
+
+.pizza-slice.pulse {
+    animation: pulse 0.5s ease-in-out;
+}
+
+@keyframes pulse {
+    0% { transform: rotate(calc(var(--index) * var(--slice-angle))) scale(1); }
+    50% { transform: rotate(calc(var(--index) * var(--slice-angle))) scale(1.1); }
+    100% { transform: rotate(calc(var(--index) * var(--slice-angle))) scale(1); }
+}
+
+.pizza-center {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    width: 25px;
+    height: 25px;
+    background: var(--background-primary);
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
+}
+
+.pizza.mini .pizza-center {
+    width: 35px;
+    height: 35px;
+}
+
+.slice-count {
+    font-size: 0.7rem;
+    font-weight: bold;
+    color: var(--text-primary);
+}
+
+.pizza.mini .slice-count {
+    font-size: 1rem;
+}
+
+.slice-label {
+    font-size: 0.85rem;
+    color: var(--text-secondary);
+}
+
+/* Flying Slices Animation */
+.flying-slices-container {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    pointer-events: none;
+    z-index: 9999;
+}
+
+.flying-slice {
+    position: absolute;
+    width: 20px;
+    height: 20px;
+    background-color: var(--slice-color, #FF6B6B);
+    clip-path: polygon(50% 50%, 100% 0%, 0% 0%);
+    opacity: 0;
+    transform: translate(var(--start-x), var(--start-y)) rotate(var(--rotation)) scale(var(--scale));
+    animation: flyToCart 0.8s ease-in var(--delay) forwards;
+}
+
+@keyframes flyToCart {
+    0% {
+        opacity: 1;
+        transform: translate(var(--start-x), var(--start-y)) rotate(var(--rotation)) scale(var(--scale));
+    }
+    20% {
+        opacity: 1;
+        transform: translate(
+            calc(var(--start-x) + (var(--dest-x) - var(--start-x)) * 0.2),
+            calc(var(--start-y) + (var(--dest-y) - var(--start-y)) * 0.2)
+        ) rotate(calc(var(--rotation) + 90deg)) scale(var(--scale));
+    }
+    100% {
+        opacity: 0;
+        transform: translate(var(--dest-x), var(--dest-y)) rotate(calc(var(--rotation) + 360deg)) scale(0.2);
+    }
+}
+
+/* Slice Adjuster Modal */
+.slice-adjuster {
+    position: absolute;
+    top: 100%;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 300px;
+    background: var(--background-secondary);
+    border-radius: 12px;
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.15);
+    padding: 1.5rem;
+    z-index: 1000; /* Ensure high z-index */
+    animation: scaleIn 0.3s ease;
+    margin-top: 15px;
+}
+
+/* Make the pizza slice allocator container relative */
+.pizza-slice-allocator {
+    position: relative;
+    z-index: 100; /* Higher than surrounding elements */
+}
+
+/* Properly position the flying slices container */
+.flying-slices-container {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    pointer-events: none;
+    z-index: 9999;
+}
+
+.slice-adjuster::before {
+    content: '';
+    position: absolute;
+    top: -10px;
+    left: 50%;
+    transform: translateX(-50%);
+    border-width: 0 10px 10px 10px;
+    border-style: solid;
+    border-color: transparent transparent rgba(255, 255, 255, 0.1) transparent;
+}
+
+@keyframes scaleIn {
+    from { opacity: 0; transform: translateX(-50%) scale(0.9); }
+    to { opacity: 1; transform: translateX(-50%) scale(1); }
+}
+
+.adjuster-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 1.25rem;
+    position: relative;
+}
+
+.adjuster-header h3 {
+    font-size: 1.1rem;
+    margin: 0;
+    color: var(--text-primary);
+}
+
+.available-slices {
+    font-size: 0.85rem;
+    color: var(--text-secondary);
+}
+
+.available-slices .count {
+    color: var(--pizza-orange);
+    font-weight: bold;
+}
+
+.close-button {
+    position: absolute;
+    top: -10px;
+    right: -10px;
+    width: 24px;
+    height: 24px;
+    border-radius: 50%;
+    background: rgba(255, 255, 255, 0.1);
+    border: none;
+    color: var(--text-secondary);
+    font-size: 1rem;
+    line-height: 1;
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+
+.close-button:hover {
+    background: rgba(255, 255, 255, 0.2);
+    color: var(--text-primary);
+}
+
+.pizza-preview {
+    display: flex;
+    justify-content: center;
+    margin-bottom: 1.5rem;
+}
+
+/* Slice Controls */
+.slice-controls {
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+    margin-bottom: 1.5rem;
+}
+
+.slice-buttons {
+    display: flex;
+    justify-content: center;
+    gap: 0.5rem;
+    flex-wrap: wrap;
+    margin-bottom: 0.5rem;
+}
+
+.slice-button {
+    width: 30px;
+    height: 30px;
+    border-radius: 50%;
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    background: rgba(255, 255, 255, 0.05);
+    color: var(--text-secondary);
+    font-size: 0.8rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+
+.slice-button:hover:not(:disabled):not(.active) {
+    background: rgba(255, 255, 255, 0.1);
+    color: var(--text-primary);
+}
+
+.slice-button.active {
+    background: linear-gradient(45deg,
+        var(--pizza-red),
+        var(--pizza-orange)
+    );
+    color: var(--primary-dark);
+    border: none;
+}
+
+.slice-button:disabled {
+    opacity: 0.3;
+    cursor: not-allowed;
+}
+
+.slice-slider {
+    -webkit-appearance: none;
+    -moz-appearance: none;
+    appearance: none;
+    width: 100%;
+    height: 6px;
+    background: rgba(255, 255, 255, 0.1);
+    border-radius: 3px;
+    outline: none;
+}
+
+.slice-slider::-webkit-slider-thumb {
+    -webkit-appearance: none;
+    appearance: none;
+    width: 20px;
+    height: 20px;
+    border-radius: 50%;
+    background: linear-gradient(45deg,
+        var(--pizza-orange),
+        var(--pizza-yellow)
+    );
+    cursor: pointer;
+}
+
+.slice-slider::-moz-range-thumb {
+    width: 20px;
+    height: 20px;
+    border-radius: 50%;
+    background: linear-gradient(45deg,
+        var(--pizza-orange),
+        var(--pizza-yellow)
+    );
+    cursor: pointer;
+    border: none;
+}
+
+.slice-info {
+    text-align: center;
+    margin-bottom: 1.5rem;
+}
+
+.slice-info p {
+    margin: 0 0 0.25rem 0;
+    color: var(--text-primary);
+    font-size: 0.9rem;
+}
+
+.slice-info small {
+    color: var(--text-secondary);
+    font-size: 0.8rem;
+}
+
+.slice-actions {
+    display: flex;
+    justify-content: space-between;
+    gap: 1rem;
+}
+
+.cancel-button, .apply-button {
+    flex: 1;
+    padding: 0.75rem;
+    border-radius: 8px;
+    border: none;
+    font-size: 0.9rem;
+    font-weight: 500;
+    cursor: pointer;
+    transition: all 0.3s ease;
+}
+
+.cancel-button {
+    background: rgba(255, 255, 255, 0.05);
+    color: var(--text-secondary);
+}
+
+.cancel-button:hover {
+    background: rgba(255, 255, 255, 0.1);
+    color: var(--text-primary);
+}
+
+.apply-button {
+    background: linear-gradient(45deg,
+        var(--pizza-red),
+        var(--pizza-orange),
+        var(--pizza-yellow)
+    );
+    color: var(--primary-dark);
+}
+
+.apply-button:hover:not(:disabled) {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+}
+
+.apply-button:disabled {
+    opacity: 0.7;
+    cursor: not-allowed;
+}
+
+/* Responsive adjustments */
+@media (max-width: 768px) {
+    .slice-adjuster {
+        width: 280px;
+        padding: 1.25rem;
+    }
+    
+    .pizza-plate {
+        width: 70px;
+        height: 70px;
+    }
+    
+    .pizza {
+        width: 60px;
+        height: 60px;
+    }
+}
+
+@media (max-width: 480px) {
+    .slice-buttons {
+        gap: 0.3rem;
+    }
+    
+    .slice-button {
+        width: 26px;
+        height: 26px;
+        font-size: 0.75rem;
+    }
+}

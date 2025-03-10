@@ -1,8 +1,9 @@
-import React, { useState, useEffect } from 'react';
-import { useParams } from 'react-router-dom';
+import React, { useState, useEffect, useCallback } from 'react';
+import { useParams, Link } from 'react-router-dom';
 import { useAuth } from '../hooks/useAuth.jsx';
 import SliceAllocation from '../components/common/SliceAllocation';
-import { api } from '../services/api';
+import CustomVideoPlayer from '../components/video/CustomVideoPlayer';
+import { api, videoService } from '../services/api';
 import './videoPage.css';
 
 const VideoPage = () => {
@@ -12,27 +13,50 @@ const VideoPage = () => {
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState(null);
     const [relatedVideos, setRelatedVideos] = useState([]);
+    const [watchProgress, setWatchProgress] = useState(null);
+
+    // Fetch video data and related videos
+    const fetchVideoData = useCallback(async () => {
+        try {
+            setLoading(true);
+            
+            // Array of promises to wait for
+            const promises = [
+                api.get(`/videos/${id}`),
+                api.get(`/videos/related/${id}`)
+            ];
+            
+            // If user is logged in, also fetch watch history for this video
+            if (user) {
+                promises.push(videoService.getWatchProgress(id));
+            }
+            
+            // Wait for all requests to complete
+            const responses = await Promise.all(promises);
+            
+            const videoData = responses[0].data;
+            const relatedVideosData = responses[1].data;
+            
+            // If we have watch progress data, add it to the video object
+            if (user && responses.length > 2 && responses[2].data) {
+                const progressData = responses[2].data;
+                videoData.watchProgress = progressData.progress;
+                setWatchProgress(progressData);
+            }
+            
+            setVideo(videoData);
+            setRelatedVideos(relatedVideosData);
+        } catch (err) {
+            setError('Failed to load video content');
+            console.error('Error fetching video:', err);
+        } finally {
+            setLoading(false);
+        }
+    }, [id, user]);
 
     useEffect(() => {
-        const fetchVideoData = async () => {
-            try {
-                setLoading(true);
-                const [videoResponse, relatedResponse] = await Promise.all([
-                    api.get(`/videos/${id}`),
-                    api.get(`/videos/related/${id}`)
-                ]);
-                setVideo(videoResponse.data);
-                setRelatedVideos(relatedResponse.data);
-            } catch (err) {
-                setError('Failed to load video content');
-                console.error('Error fetching video:', err);
-            } finally {
-                setLoading(false);
-            }
-        };
-
         fetchVideoData();
-    }, [id]);
+    }, [fetchVideoData]);
 
     if (loading) {
         return (
@@ -54,17 +78,13 @@ const VideoPage = () => {
     return (
         <div className="video-page">
             <div className="video-main">
-                <div className="video-player-container">
-                    <div className="video-player">
-                        <video 
-                            src={video.video_url} 
-                            controls 
-                            poster={video.thumbnail_url}
-                        >
-                            Your browser does not support the video tag.
-                        </video>
-                    </div>
-                </div>
+                <CustomVideoPlayer
+                    video={video}
+                    onProgressUpdate={(progressData) => {
+                        console.log('Video progress updated:', progressData);
+                        // We don't need to do anything here as the component handles progress tracking
+                    }}
+                />
 
                 <div className="video-details">
                     <h1 className="video-title">{video.title}</h1>
@@ -117,22 +137,26 @@ const VideoPage = () => {
                 <h2>Related Videos</h2>
                 <div className="related-videos-grid">
                     {relatedVideos.map(relatedVideo => (
-                        <div key={relatedVideo.id} className="related-video-card">
-                            <img 
-                                src={relatedVideo.thumbnail_url} 
+                        <Link
+                            to={`/video/${relatedVideo._id}`}
+                            key={relatedVideo.id}
+                            className="related-video-card"
+                        >
+                            <img
+                                src={relatedVideo.thumbnail_url}
                                 alt={relatedVideo.title}
                                 className="related-thumbnail"
                             />
                             <div className="related-info">
                                 <h3>{relatedVideo.title}</h3>
-                                <p>{relatedVideo.creator_name}</p>
+                                <p>{relatedVideo.creator || relatedVideo.creator_name}</p>
                                 <div className="related-stats">
                                     <span>{relatedVideo.views} views</span>
                                     <span>•</span>
                                     <span>{relatedVideo.duration}</span>
                                 </div>
                             </div>
-                        </div>
+                        </Link>
                     ))}
                 </div>
             </div>

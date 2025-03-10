@@ -6,12 +6,53 @@
 }
 
 .profile-header {
-    text-align: center;
+    display: flex;
+    align-items: center;
+    gap: 2rem;
     margin-bottom: 3rem;
     padding: 2rem;
     background: var(--background-secondary);
     border-radius: 16px;
     border: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.profile-avatar-container {
+    flex-shrink: 0;
+}
+
+.profile-info {
+    flex: 1;
+    text-align: left;
+}
+
+.user-stats {
+    display: flex;
+    gap: 2rem;
+    margin-top: 1rem;
+}
+
+.user-stats .stat {
+    display: flex;
+    flex-direction: column;
+}
+
+.user-stats .value {
+    font-size: 1.8rem;
+    font-weight: bold;
+    color: var(--text-primary);
+    background: linear-gradient(45deg,
+        var(--pizza-red),
+        var(--pizza-orange),
+        var(--pizza-yellow)
+    );
+    -webkit-background-clip: text;
+    background-clip: text;
+    -webkit-text-fill-color: transparent;
+}
+
+.user-stats .label {
+    font-size: 0.85rem;
+    color: var(--text-secondary);
 }
 
 .profile-header h2 {
@@ -217,6 +258,53 @@
     font-size: 1.2rem;
 }
 
+/* Slice History Tab */
+.profile-history {
+    padding: 0;
+    background: transparent;
+    border: none;
+}
+
+/* Videos Grid */
+.videos-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+    gap: 1.5rem;
+    margin-top: 1.5rem;
+}
+
+.empty-state {
+    text-align: center;
+    padding: 3rem;
+    background: rgba(0, 0, 0, 0.2);
+    border-radius: 12px;
+    margin-top: 2rem;
+}
+
+.empty-state p {
+    color: var(--text-secondary);
+    margin-bottom: 1.5rem;
+}
+
+.browse-videos-btn {
+    display: inline-block;
+    padding: 0.75rem 1.5rem;
+    background: linear-gradient(45deg,
+        var(--pizza-red),
+        var(--pizza-orange)
+    );
+    color: white;
+    border-radius: 8px;
+    text-decoration: none;
+    font-weight: 500;
+    transition: all 0.3s ease;
+}
+
+.browse-videos-btn:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+}
+
 @media (max-width: 768px) {
     .profile-container {
         padding: 1rem;
@@ -225,6 +313,16 @@
 
     .profile-header {
         padding: 1.5rem;
+        flex-direction: column;
+        text-align: center;
+    }
+
+    .profile-info {
+        text-align: center;
+    }
+
+    .user-stats {
+        justify-content: center;
     }
 
     .profile-header h2 {
@@ -237,5 +335,21 @@
 
     .profile-tabs {
         flex-direction: column;
+    }
+
+    .videos-grid {
+        grid-template-columns: 1fr;
+    }
+}
+
+@media (max-width: 480px) {
+    .profile-content {
+        padding: 1rem;
+    }
+    
+    .user-stats {
+        flex-direction: column;
+        gap: 0.5rem;
+        align-items: center;
     }
 }

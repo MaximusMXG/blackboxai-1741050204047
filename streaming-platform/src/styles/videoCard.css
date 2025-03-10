@@ -1,20 +1,22 @@
 .video-card {
     background: var(--background-secondary);
     border-radius: 12px;
-    overflow: hidden;
+    overflow: visible; /* Changed from hidden to visible to allow the slice menu to extend beyond the card */
     transition: all 0.3s ease;
     border: 1px solid rgba(255, 255, 255, 0.1);
     height: 100%;
     display: flex;
     flex-direction: column;
     position: relative;
+    width: 100%;
+    max-width: 100%;
 }
 
 .video-card-inner {
     height: 100%;
     display: flex;
     flex-direction: column;
-    overflow: hidden;
+    overflow: visible; /* Changed from hidden to visible to allow the slice menu to extend beyond the card */
 }
 
 .video-card:hover {
@@ -31,18 +33,36 @@
 .thumbnail-container {
     position: relative;
     width: 100%;
-    overflow: hidden;
+    height: 0;
+    padding-top: 56.25%; /* 16:9 aspect ratio */
+    overflow: hidden; /* Keep this as hidden to contain the video thumbnails */
+    border-radius: 12px 12px 0 0; /* Add border radius to match the card's top border radius */
+    background-color: rgba(0, 0, 0, 0.2); /* Dark background while image loads */
 }
 
 .video-thumbnail {
+    position: absolute;
+    top: 0;
+    left: 0;
     width: 100%;
-    height: 200px;
-    object-fit: cover;
+    height: 100%;
+    object-fit: cover; /* Cover ensures the image fills the container while maintaining aspect ratio */
+    object-position: center; /* Centers the image within the container */
     transition: transform 0.5s ease;
+    display: block; /* Removes any inline spacing */
+    min-height: 100%; /* Ensures image fills container height */
+    min-width: 100%; /* Ensures image fills container width */
+    backface-visibility: hidden; /* Prevents flickering in some browsers */
 }
 
 .video-link:hover .video-thumbnail {
-    transform: scale(1.05);
+    transform: scale(1.08);
+    filter: brightness(1.1);
+}
+
+/* Add a subtle shadow to the thumbnail on hover for depth */
+.video-link:hover .thumbnail-container {
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
 }
 
 .video-duration {
@@ -338,9 +358,27 @@
     border-bottom-left-radius: 12px;
 }
 
+/* Fix video card container spacing */
+.video-card {
+    display: flex;
+    flex-direction: column;
+    width: 100%;
+    margin: 0 auto;
+}
+
+.video-card-inner {
+    width: 100%;
+}
+
+.video-actions {
+    margin-top: 1rem;
+    z-index: 2;
+    position: relative;
+}
+
 @media (max-width: 768px) {
-    .video-thumbnail {
-        height: 180px;
+    .thumbnail-container {
+        padding-top: 56.25%; /* Maintain 16:9 aspect ratio */
     }
 
     .video-info {

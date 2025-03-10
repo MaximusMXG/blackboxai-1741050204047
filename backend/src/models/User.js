@@ -93,6 +93,35 @@ const userSchema = new mongoose.Schema({
         type: Boolean,
         default: false
     },
+    isAdmin: {
+        type: Boolean,
+        default: false
+    },
+    isPartner: {
+        type: Boolean,
+        default: false
+    },
+    role: {
+        type: String,
+        enum: ['viewer', 'creator', 'admin'],
+        default: 'viewer'
+    },
+    suspended: {
+        type: Boolean,
+        default: false
+    },
+    suspensionReason: {
+        type: String,
+        default: null
+    },
+    suspensionEnd: {
+        type: Date,
+        default: null
+    },
+    lastActive: {
+        type: Date,
+        default: Date.now
+    },
     watchHistory: [watchHistorySchema],
     notifications: [notificationSchema],
     preferences: {

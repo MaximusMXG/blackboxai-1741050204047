@@ -113,13 +113,48 @@ router.get('/tags', async (req, res) => {
     }
 });
 
+// Get related videos
+router.get('/related/:id', async (req, res) => {
+    try {
+        console.log('Fetching related videos for:', req.params.id);
+        const video = await Video.findById(req.params.id);
+        
+        if (!video) {
+            return res.status(404).json({ error: 'Video not found' });
+        }
+        
+        // Find videos with the same genre or similar tags
+        const relatedVideos = await Video.find({
+            _id: { $ne: video._id }, // Exclude the current video
+            $or: [
+                { genre: video.genre },
+                { tags: { $in: video.tags } }
+            ]
+        })
+        .sort('-views')
+        .limit(8);
+        
+        console.log(`Found ${relatedVideos.length} related videos`);
+        res.json(relatedVideos);
+    } catch (error) {
+        console.error('Error fetching related videos:', error);
+        res.status(500).json({ error: 'Error fetching related videos' });
+    }
+});
+
 // Get video by ID with stats
 router.get('/:id', async (req, res) => {
     try {
+        console.log('Fetching video with ID:', req.params.id);
         const video = await Video.getWithStats(req.params.id);
+        console.log('Video found:', video.title);
         res.json(video);
     } catch (error) {
-        res.status(404).json({ error: error.message });
+        console.error('Error fetching video:', error);
+        res.status(404).json({ 
+            error: error.message,
+            detail: 'Failed to retrieve video. Please check if the video ID exists.'
+        });
     }
 });
 
@@ -186,7 +221,7 @@ router.get('/:id/stats', async (req, res) => {
 
 // Routes were duplicated and have been removed
 
-// Increment video view count
+// Increment video view count and create a watch session
 router.post('/:id/view', async (req, res) => {
     try {
         const video = await Video.findById(req.params.id);
@@ -211,8 +246,15 @@ router.post('/:id/view', async (req, res) => {
             video.viewsHistory.push({ date: today, count: 1 });
         }
         
+        // Create a unique session ID for this view
+        const sessionId = new mongoose.Types.ObjectId();
+        
         await video.save();
-        res.json({ success: true, views: video.views });
+        res.json({
+            success: true,
+            views: video.views,
+            sessionId: sessionId
+        });
     } catch (error) {
         res.status(500).json({ error: 'Error updating video view count' });
     }
@@ -300,6 +342,78 @@ router.get('/:id/comments', async (req, res) => {
         res.json(video.comments);
     } catch (error) {
         res.status(500).json({ error: 'Error fetching comments' });
+    }
+});
+
+// Update video watch progress
+router.post('/:id/progress', auth, async (req, res) => {
+    try {
+        const { progress, currentTime, completed } = req.body;
+        const userId = req.user.id;
+        const videoId = req.params.id;
+        
+        if (progress === undefined || currentTime === undefined) {
+            return res.status(400).json({ error: 'Progress and currentTime are required' });
+        }
+        
+        // Find the user to update their watch history
+        const User = mongoose.model('User');
+        const user = await User.findById(userId);
+        
+        if (!user) {
+            return res.status(404).json({ error: 'User not found' });
+        }
+        
+        // Find the video to make sure it exists
+        const video = await Video.findById(videoId);
+        if (!video) {
+            return res.status(404).json({ error: 'Video not found' });
+        }
+        
+        // Check if the video is already in the user's watch history
+        const watchHistoryIndex = user.watchHistory.findIndex(
+            item => item.videoId.toString() === videoId
+        );
+        
+        if (watchHistoryIndex > -1) {
+            // Update existing watch history
+            user.watchHistory[watchHistoryIndex].progress = progress;
+            user.watchHistory[watchHistoryIndex].watchedDuration = currentTime;
+            user.watchHistory[watchHistoryIndex].watchedAt = new Date();
+            user.watchHistory[watchHistoryIndex].completed = completed || false;
+        } else {
+            // Add to watch history
+            user.watchHistory.push({
+                videoId,
+                watchedAt: new Date(),
+                watchedDuration: currentTime,
+                progress,
+                completed: completed || false,
+                title: video.title,
+                thumbnail: video.thumbnail_url,
+                creator: video.creator,
+                duration: video.duration,
+                durationSeconds: video.durationSeconds,
+                genre: video.genre
+            });
+        }
+        
+        // Ensure the watch history doesn't grow too large (keep most recent 100 entries)
+        if (user.watchHistory.length > 100) {
+            user.watchHistory = user.watchHistory
+                .sort((a, b) => new Date(b.watchedAt) - new Date(a.watchedAt))
+                .slice(0, 100);
+        }
+        
+        await user.save();
+        
+        res.json({
+            success: true,
+            message: 'Watch progress updated successfully'
+        });
+    } catch (error) {
+        console.error('Error updating watch progress:', error);
+        res.status(500).json({ error: 'Error updating watch progress' });
     }
 });
 

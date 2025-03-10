@@ -127,6 +127,15 @@
     grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
     gap: 2rem;
     margin-top: 2rem;
+    align-items: stretch; /* Ensures all cards stretch to match the tallest one in the row */
+    justify-content: space-between; /* Distributes space evenly */
+    width: 100%;
+    max-width: 100%;
+}
+
+.video-grid > * {
+    height: 100%;
+    width: 100%;
 }
 
 .video-thumbnail {

@@ -1,7 +1,7 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
 import { useAuth } from '../../hooks/useAuth.jsx';
-import SliceAllocation from './SliceAllocation';
+import PizzaSliceAllocator from './PizzaSliceAllocator';
 import '../../styles/videoCard.css';
 
 const VideoCard = ({ video, className = '', progress }) => {
@@ -80,7 +80,7 @@ const VideoCard = ({ video, className = '', progress }) => {
 
                     {user && (
                         <div className="video-actions">
-                            <SliceAllocation
+                            <PizzaSliceAllocator
                                 videoId={video._id}
                                 currentSlices={video.user_slices || 0}
                             />

@@ -106,26 +106,25 @@
     font-weight: 500;
 }
 
-.profile-avatar {
+.profile-pizza-avatar {
+    margin-right: 2px;
+}
+
+.pizza-avatar-wrapper.profile-pizza-avatar .slice-progress {
+    display: none;
+}
+
+.pizza-avatar-wrapper.profile-pizza-avatar .pizza-avatar-small {
     width: 32px;
     height: 32px;
-    border-radius: 50%;
-    object-fit: cover;
-    border: 2px solid transparent;
-    background: linear-gradient(45deg,
-        var(--pizza-red),
-        var(--pizza-orange),
-        var(--pizza-yellow),
-        var(--pizza-green)
-    ) border-box;
-    -webkit-mask:
-        linear-gradient(#fff 0 0) padding-box, 
-        linear-gradient(#fff 0 0);
-    mask:
-        linear-gradient(#fff 0 0) padding-box, 
-        linear-gradient(#fff 0 0);
-    -webkit-mask-composite: destination-out;
-    mask-composite: exclude;
+}
+
+.pizza-avatar-wrapper.profile-pizza-avatar .slice-count-indicator {
+    width: 14px;
+    height: 14px;
+    font-size: 8px;
+    bottom: 0;
+    right: 0;
 }
 
 .auth-button,
@@ -199,6 +198,27 @@
 .dropdown-item:hover {
     background-color: rgba(255, 255, 255, 0.1);
     color: var(--text-primary);
+}
+
+.partner-link {
+    background: linear-gradient(45deg,
+        rgba(255, 215, 0, 0.1),
+        rgba(255, 255, 255, 0.05)
+    );
+    border-left: 3px solid var(--pizza-yellow);
+    margin: 5px 0;
+}
+
+.partner-link .partner-icon {
+    margin-right: 8px;
+    font-size: 1.1rem;
+}
+
+.partner-link:hover {
+    background: linear-gradient(45deg,
+        rgba(255, 215, 0, 0.2),
+        rgba(255, 255, 255, 0.1)
+    );
 }
 
 @media (max-width: 768px) {

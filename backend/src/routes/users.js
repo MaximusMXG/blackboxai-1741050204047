@@ -289,6 +289,62 @@ router.get('/history', auth, async (req, res) => {
     }
 });
 
+// Get specific video watch progress for a user
+router.get('/history/:videoId', auth, async (req, res) => {
+    try {
+        console.log('Fetching watch progress for video:', req.params.videoId);
+        const { videoId } = req.params;
+        
+        // Check if video exists
+        const videoExists = await Video.exists({ _id: videoId });
+        if (!videoExists) {
+            console.error('Video not found:', videoId);
+            return res.status(404).json({ error: 'Video not found' });
+        }
+        
+        // Find the user and the specific watch history entry
+        const user = await User.findById(req.user._id);
+        
+        // Look for the video in watch history
+        const watchHistoryEntry = user.watchHistory.find(
+            entry => entry.videoId.toString() === videoId
+        );
+        
+        if (!watchHistoryEntry) {
+            console.log('No watch history found for video:', videoId);
+            // Return default progress object instead of null
+            return res.json({
+                videoId,
+                progress: 0,
+                watchedDuration: 0,
+                watchedAt: new Date(),
+                completed: false
+            });
+        }
+        
+        console.log('Found watch progress:', watchHistoryEntry);
+        
+        // Return the watch progress data
+        res.json({
+            videoId,
+            progress: watchHistoryEntry.progress || 0,
+            watchedDuration: watchHistoryEntry.watchedDuration || 0,
+            watchedAt: watchHistoryEntry.watchedAt,
+            completed: watchHistoryEntry.completed || false
+        });
+    } catch (error) {
+        console.error('Error fetching video watch progress:', error);
+        // Return default progress object instead of error to prevent UI failures
+        return res.json({
+            videoId: req.params.videoId,
+            progress: 0,
+            watchedDuration: 0,
+            watchedAt: new Date(),
+            completed: false
+        });
+    }
+});
+
 // Add to watch history
 router.post('/history', auth, async (req, res) => {
     try {

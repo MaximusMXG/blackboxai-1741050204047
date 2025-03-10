@@ -7,6 +7,12 @@ require('dotenv').config();
 
 console.log('Starting Slice backend server...');
 
+// Ensure we're in development mode
+if (!process.env.NODE_ENV) {
+    process.env.NODE_ENV = 'development';
+    console.log('Setting NODE_ENV to development mode');
+}
+
 // Create data directory if it doesn't exist
 const dataDir = path.join(__dirname, 'src', 'db', 'data');
 if (!fs.existsSync(dataDir)) {
@@ -71,7 +77,11 @@ const startServer = () => {
     console.log('Starting server...');
     const serverProcess = spawn('node', ['src/server.js'], {
         cwd: __dirname,
-        stdio: 'inherit'
+        stdio: 'inherit',
+        env: { 
+            ...process.env, 
+            NODE_ENV: process.env.NODE_ENV || 'development' 
+        }
     });
     
     serverProcess.on('close', (code) => {

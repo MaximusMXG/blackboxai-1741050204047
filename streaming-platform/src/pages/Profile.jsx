@@ -1,6 +1,10 @@
 import React, { useState, useEffect } from 'react';
+import { Link } from 'react-router-dom';
 import { useAuth } from '../hooks/useAuth.jsx';
-import { userService } from '../services/api';
+import { userService, videoService } from '../services/api';
+import PizzaAvatar from '../components/common/PizzaAvatar';
+import SliceHistory from '../components/user/SliceHistory';
+import VideoCard from '../components/common/VideoCard';
 import '../styles/profile.css';
 
 const Profile = () => {
@@ -31,22 +35,34 @@ const Profile = () => {
             case 'subscriptions':
                 return (
                     <div className="profile-subscriptions">
-                        <h3>Your Slice Allocations</h3>
-                        <div className="slice-grid">
-                            {sliceAllocation.map((allocation) => (
-                                <div key={allocation.id} className="slice-card">
-                                    <div className="slice-info">
-                                        <h4>{allocation.video_title}</h4>
-                                        <p>Slices: {allocation.slices}</p>
-                                    </div>
-                                    <div className="slice-actions">
-                                        <button className="btn-adjust">
-                                            Adjust Slices
-                                        </button>
-                                    </div>
-                                </div>
-                            ))}
-                        </div>
+                        <h3>Videos You're Supporting</h3>
+                        {sliceAllocation.length === 0 ? (
+                            <div className="empty-state">
+                                <p>You haven't allocated slices to any videos yet!</p>
+                                <Link to="/" className="browse-videos-btn">Browse Videos</Link>
+                            </div>
+                        ) : (
+                            <div className="videos-grid">
+                                {sliceAllocation.map((allocation) => (
+                                    <VideoCard
+                                        key={allocation.video_id}
+                                        video={{
+                                            _id: allocation.video_id,
+                                            title: allocation.video_title,
+                                            creator: allocation.video_creator,
+                                            thumbnail: allocation.video_thumbnail,
+                                            user_slices: allocation.slices
+                                        }}
+                                    />
+                                ))}
+                            </div>
+                        )}
+                    </div>
+                );
+            case 'slice-history':
+                return (
+                    <div className="profile-history">
+                        <SliceHistory userId={user?.id} />
                     </div>
                 );
             case 'settings':
@@ -95,18 +111,43 @@ const Profile = () => {
     return (
         <div className="profile-container">
             <div className="profile-header">
-                <h2>Welcome, <span className="gradient-text">{user?.username}</span></h2>
-                <p>Manage your subscriptions and account settings</p>
+                <div className="profile-avatar-container">
+                    <PizzaAvatar
+                        user={user}
+                        size="large"
+                        animated={true}
+                    />
+                </div>
+                <div className="profile-info">
+                    <h2>Welcome, <span className="gradient-text">{user?.username}</span></h2>
+                    <p>Manage your subscriptions, slice history, and account settings</p>
+                    <div className="user-stats">
+                        <div className="stat">
+                            <span className="value">{user?.slices || 0}</span>
+                            <span className="label">Slices Available</span>
+                        </div>
+                        <div className="stat">
+                            <span className="value">{sliceAllocation.length}</span>
+                            <span className="label">Videos Supported</span>
+                        </div>
+                    </div>
+                </div>
             </div>
 
             <div className="profile-tabs">
-                <button 
+                <button
                     className={`tab-button ${activeTab === 'subscriptions' ? 'active' : ''}`}
                     onClick={() => setActiveTab('subscriptions')}
                 >
-                    <span>Subscriptions</span>
+                    <span>My Videos</span>
                 </button>
-                <button 
+                <button
+                    className={`tab-button ${activeTab === 'slice-history' ? 'active' : ''}`}
+                    onClick={() => setActiveTab('slice-history')}
+                >
+                    <span>Slice History</span>
+                </button>
+                <button
                     className={`tab-button ${activeTab === 'settings' ? 'active' : ''}`}
                     onClick={() => setActiveTab('settings')}
                 >

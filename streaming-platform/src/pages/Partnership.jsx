@@ -1,6 +1,6 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useAuth } from '../hooks/useAuth.jsx';
-import { api } from '../services/api';
+import { partnershipService } from '../services/api';
 import '../styles/Partnership.css';
 
 const Partnership = () => {
@@ -15,6 +15,27 @@ const Partnership = () => {
     const [loading, setLoading] = useState(false);
     const [error, setError] = useState(null);
     const [success, setSuccess] = useState(false);
+    const [existingApplications, setExistingApplications] = useState([]);
+    const [loadingApplications, setLoadingApplications] = useState(false);
+
+    // Fetch user's existing applications
+    useEffect(() => {
+        const fetchApplications = async () => {
+            if (!user) return;
+            
+            try {
+                setLoadingApplications(true);
+                const response = await partnershipService.getUserApplications();
+                setExistingApplications(response.data);
+            } catch (err) {
+                console.error('Failed to fetch applications:', err);
+            } finally {
+                setLoadingApplications(false);
+            }
+        };
+        
+        fetchApplications();
+    }, [user]);
 
     const handleChange = (e) => {
         setFormData({
@@ -30,11 +51,13 @@ const Partnership = () => {
         setSuccess(false);
 
         try {
-            await api.post('/partnerships/apply', {
-                ...formData,
-                userId: user.id
-            });
+            const response = await partnershipService.apply(formData);
             setSuccess(true);
+            
+            // Add the new application to the list
+            setExistingApplications([response.data.partnership, ...existingApplications]);
+            
+            // Reset form
             setFormData({
                 channelName: '',
                 description: '',
@@ -43,7 +66,11 @@ const Partnership = () => {
                 uploadFrequency: 'weekly'
             });
         } catch (err) {
-            setError(err.response?.data?.error || 'Failed to submit application');
+            if (err.response?.data?.error === 'You already have a pending application') {
+                setError('You already have a pending application. Please wait for a response or check your existing applications.');
+            } else {
+                setError(err.response?.data?.error || 'Failed to submit application');
+            }
         } finally {
             setLoading(false);
         }
@@ -57,6 +84,34 @@ const Partnership = () => {
             </div>
 
             <div className="partnership-content">
+                {loadingApplications ? (
+                    <div className="loading-spinner">Loading your applications...</div>
+                ) : existingApplications.length > 0 && (
+                    <div className="existing-applications">
+                        <h2>Your Applications</h2>
+                        <div className="applications-list">
+                            {existingApplications.map(app => (
+                                <div key={app._id} className={`application-card ${app.status}`}>
+                                    <div className="application-header">
+                                        <h3>{app.channelName}</h3>
+                                        <span className={`status-badge ${app.status}`}>{app.status}</span>
+                                    </div>
+                                    <div className="application-details">
+                                        <p><strong>Content Type:</strong> {app.contentType}</p>
+                                        <p><strong>Upload Frequency:</strong> {app.uploadFrequency}</p>
+                                        <p><strong>Submitted:</strong> {new Date(app.createdAt).toLocaleDateString()}</p>
+                                    </div>
+                                    {app.status === 'rejected' && app.rejectionReason && (
+                                        <div className="rejection-reason">
+                                            <p><strong>Reason:</strong> {app.rejectionReason}</p>
+                                        </div>
+                                    )}
+                                </div>
+                            ))}
+                        </div>
+                    </div>
+                )}
+                
                 <div className="benefits-section">
                     <h2>Why Partner With Us?</h2>
                     <div className="benefits-grid">

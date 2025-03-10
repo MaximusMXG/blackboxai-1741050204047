@@ -1,6 +1,8 @@
 import React, { useState, useRef, useEffect } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { useAuth } from '../../hooks/useAuth';
+import { partnershipService } from '../../services/api';
+import PizzaAvatar from './PizzaAvatar';
 import './Navbar.css';
 
 const Navbar = () => {
@@ -8,6 +10,7 @@ const Navbar = () => {
     const navigate = useNavigate();
     const [dropdownOpen, setDropdownOpen] = useState(false);
     const dropdownRef = useRef(null);
+    const [isPartner, setIsPartner] = useState(false);
 
     useEffect(() => {
         const handleClickOutside = (event) => {
@@ -19,6 +22,20 @@ const Navbar = () => {
         document.addEventListener('mousedown', handleClickOutside);
         return () => document.removeEventListener('mousedown', handleClickOutside);
     }, []);
+    
+    // Check if user is a partner
+    useEffect(() => {
+        const checkPartnerStatus = async () => {
+            if (user) {
+                const partnerStatus = await partnershipService.checkPartnerStatus();
+                setIsPartner(partnerStatus);
+            } else {
+                setIsPartner(false);
+            }
+        };
+        
+        checkPartnerStatus();
+    }, [user]);
 
     const handleLogout = () => {
         logout();
@@ -38,6 +55,7 @@ const Navbar = () => {
                         <Link to="/indie" className="nav-link">Indie</Link>
                         <Link to="/mainstream" className="nav-link">Mainstream</Link>
                         <Link to="/crowdfunding" className="nav-link">Crowdfunding</Link>
+                        <Link to="/brands" className="nav-link">Brands</Link>
                     </div>
                 </div>
 
@@ -46,14 +64,15 @@ const Navbar = () => {
                         <>
                             <Link to="/partnership" className="nav-link">Partnership</Link>
                             <div className="user-menu" ref={dropdownRef}>
-                                <button 
+                                <button
                                     className="profile-button"
                                     onClick={() => setDropdownOpen(!dropdownOpen)}
                                 >
-                                    <img 
-                                        src={user.avatar || '/default-avatar.png'} 
-                                        alt={user.username}
-                                        className="profile-avatar"
+                                    <PizzaAvatar
+                                        user={user}
+                                        size="small"
+                                        showSliceCount={true}
+                                        className="profile-pizza-avatar"
                                     />
                                     <span className="profile-name">{user.username}</span>
                                 </button>
@@ -74,7 +93,17 @@ const Navbar = () => {
                                         >
                                             Settings
                                         </Link>
-                                        <button 
+                                        {isPartner && (
+                                            <Link
+                                                to="/partner-dashboard"
+                                                className="dropdown-item partner-link"
+                                                onClick={() => setDropdownOpen(false)}
+                                            >
+                                                <span className="partner-icon">🌟</span>
+                                                Partner Dashboard
+                                            </Link>
+                                        )}
+                                        <button
                                             onClick={handleLogout}
                                             className="dropdown-item logout-button"
                                         >

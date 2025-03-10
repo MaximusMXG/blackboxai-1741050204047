@@ -1,35 +1,140 @@
-# 🍕 Slice: The Indie Streaming Platform
+# 🍕 Slice Streaming Platform
 
-Slice is a streaming platform centered around indie content, combining elements of Netflix, Steam, and GoFundMe. It empowers both creators and viewers by allowing users to directly allocate their subscription or ad revenue to specific creators using a unique "pizza slice" system.
+Slice is a video streaming platform with a unique "slice" allocation system that allows users to support their favorite content creators by allocating slices of their subscription.
 
-## 🎯 Vision
-Our goal is to create a sustainable, user-driven platform for indie filmmakers, web series creators, animators, and game developers. Slice ensures that content creators receive direct support from their audience, eliminating the inefficiencies of traditional revenue distribution models.
+## Features
 
-## 🔥 Key Features
-- **Pizza Slice Funding** – Users allocate their subscription or ad revenue to a max of 5 or 10 creators, depending on their choice.
-- **Regional Pricing** – Subscription costs vary by region to improve accessibility while ensuring fair creator compensation.
-- **Creator Upload System** – Works similarly to Steam, allowing indie creators to distribute their content seamlessly.
-- **Hybrid Platform** – Combines streaming and crowdfunding elements, enabling users to back projects and watch completed works.
-- **Community-Driven Support** – Users directly fund the creators they love instead of relying on a flat ad-revenue split.
+### 🍕 Interactive Slice Allocation
+- **Pizza Slice Visualization**: Allocate "slices" of your subscription represented as pizza slices
+- **Animated Slices**: Visual feedback with animations when allocating slices
+- **Dynamic Allocation**: Adjust your support for content creators in real-time
 
-## 🚀 How It Works
-1. **Sign Up & Subscribe** – Choose a plan that fits your region.
-2. **Pick Your Creators** – Allocate your pizza slices to your favorite indie filmmakers, animators, or game developers.
-3. **Watch & Support** – Stream content while your chosen creators earn revenue from your subscription and ad views.
-4. **Discover & Fund** – Support in-development projects to help bring them to life.
+### 👤 User Profiles
+- **Pizza Avatar**: Profile picture shows available slices as a pizza
+- **Slice History**: Track your allocation history with detailed statistics
+- **Impact Dashboard**: See the impact of your slice allocations
 
-## 🛠️ Tech Stack
-- **Frontend:** [TBD] React JS & React Native
-- **Backend:** [TBD] Node.js
-- **Database:** [TBD] MongoDB an a SQL Based system for other data
-- **Cloud Storage:** Likely AWS S3, Google Cloud, or a decentralized alternative
-- **Payment Processing:** Stripe or a similar service for subscriptions and creator payouts
+### 🎬 Brand Management
+- **Brand Discovery**: Explore content creator brands in various categories
+- **Brand Profiles**: Detailed brand pages with content, stats, and following functionality
+- **Brand Dashboard**: Analytics, content management, and settings for brands
 
-## 📌 Roadmap
-- [ ] Develop MVP with basic streaming and pizza slice allocation.
-- [ ] Implement creator upload system.
-- [ ] Refine UI/UX inspired by Netflix and GoFundMe.
-- [ ] Launch beta for select users.
-- [ ] Expand features and scale based on feedback.
+### 👔 Partnership System
+- **Partnership Applications**: Apply to become a verified partner
+- **Application Status**: Track your application progress
+- **Partner Benefits**: Access to analytics and brand management tools
 
+## Project Structure
 
+### Backend
+- **Models**: Mongoose schemas for User, Video, Subscription, Brand, etc.
+- **Routes**: API endpoints for all features
+- **Middleware**: Authentication and other utilities
+- **Database**: MongoDB with Mongoose ODM
+
+### Frontend
+- **React Components**: Modular UI components
+- **Context API**: State management
+- **CSS Modules**: Styling with component-scoped CSS
+- **Vite**: Build tool and development server
+
+## Getting Started
+
+### Prerequisites
+- Node.js (v14+)
+- MongoDB (local or Atlas)
+
+### Installation
+
+1. Clone the repository
+```bash
+git clone https://github.com/yourusername/slice.git
+cd slice
+```
+
+2. Install backend dependencies
+```bash
+cd backend
+npm install
+```
+
+3. Install frontend dependencies
+```bash
+cd ../streaming-platform
+npm install
+```
+
+4. Set up environment variables
+Create a `.env` file in the `backend` directory with:
+```
+MONGODB_URI=mongodb://localhost:27017/slice
+JWT_SECRET=your_jwt_secret
+PORT=3002
+```
+
+### Running the Application
+
+1. Start MongoDB (if using local installation)
+
+2. Run the setup and test script
+```bash
+cd backend
+./setup-and-test.sh
+```
+
+3. Start the backend server
+```bash
+node start-server.js
+```
+
+4. Start the frontend development server
+```bash
+cd ../streaming-platform
+npm run dev
+```
+
+5. Open your browser to `http://localhost:5173`
+
+## Testing the Features
+
+### Slice Allocation
+1. Browse videos on the home page
+2. Click on a video to view it
+3. Use the pizza slice allocator to allocate slices to the video
+
+### User Profile
+1. Click on your profile avatar in the navbar
+2. Go to your profile page to see your slice history
+3. View statistics about your slice allocations
+
+### Brands
+1. Navigate to the Brands page from the navbar
+2. Browse brands by category
+3. Click on a brand to view their profile
+4. Follow brands you're interested in
+
+### Brand Dashboard
+1. Apply for partnership on the Partnership page
+2. Once approved, access your brand dashboard
+3. View analytics, manage content, and adjust settings
+
+## Technical Implementation
+
+### Slice Allocation System
+The slice allocation system uses a subscription model where users have a certain number of "slices" they can allocate to videos. This is visualized as a pizza, with each slice representing a portion of the user's subscription.
+
+### Pizza Avatar
+The pizza avatar component dynamically renders a pizza where each slice represents an available slice the user can allocate. The number of slices is determined by the user's subscription level.
+
+### Brand System
+Brands represent content creators on the platform. They have profiles, can upload videos, and receive slice allocations from users. Verified brands have access to the brand dashboard with analytics and content management tools.
+
+## License
+
+This project is licensed under the MIT License - see the LICENSE file for details.
+
+## Acknowledgements
+
+- Pizza emoji for inspiration 🍕
+- React Team for the awesome UI library
+- MongoDB Team for the database

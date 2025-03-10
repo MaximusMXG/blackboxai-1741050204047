@@ -1,0 +1,259 @@
+/* Pizza Avatar Component */
+.pizza-avatar-wrapper {
+    position: relative;
+    display: inline-block;
+}
+
+/* Pizza Avatar Sizing */
+.pizza-avatar {
+    position: relative;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 2;
+}
+
+.pizza-avatar-small {
+    width: 40px;
+    height: 40px;
+}
+
+.pizza-avatar-medium {
+    width: 80px;
+    height: 80px;
+}
+
+.pizza-avatar-large {
+    width: 120px;
+    height: 120px;
+}
+
+/* Pizza Plate Styling */
+.pizza-avatar-plate {
+    width: 100%;
+    height: 100%;
+    background: rgba(255, 255, 255, 0.05);
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+    transition: all 0.3s ease;
+    overflow: visible;
+}
+
+.pizza-avatar.animated:hover .pizza-avatar-plate {
+    transform: rotate(15deg) scale(1.05);
+}
+
+/* Pizza Content */
+.pizza-avatar-content {
+    width: 90%;
+    height: 90%;
+    position: relative;
+    border-radius: 50%;
+    background: var(--pizza-crust, #E6C27F);
+    overflow: hidden;
+}
+
+/* Pizza Slices */
+.pizza-avatar-slice {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 50%;
+    height: 50%;
+    transform-origin: bottom right;
+    opacity: 0.15;
+    transition: opacity 0.3s ease;
+    pointer-events: none;
+}
+
+.pizza-avatar-slice.has-slice {
+    opacity: 1;
+}
+
+.pizza-avatar.animated .pizza-avatar-slice.has-slice {
+    animation: slicePulse 2s infinite;
+    animation-delay: calc(var(--index, 0) * 0.1s);
+}
+
+@keyframes slicePulse {
+    0%, 100% { opacity: 1; }
+    50% { opacity: 0.8; }
+}
+
+.slice-fill {
+    width: 100%;
+    height: 100%;
+    background: var(--slice-color, #FF6B6B);
+    clip-path: polygon(0 0, 100% 0, 0 100%);
+    transition: transform 0.3s ease;
+}
+
+.pizza-avatar.animated:hover .slice-fill {
+    transform: scale(1.05);
+}
+
+/* Avatar Center */
+.pizza-avatar-center {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    width: 75%;
+    height: 75%;
+    border-radius: 50%;
+    background: var(--background-primary);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    overflow: hidden;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
+    border: 2px solid rgba(255, 255, 255, 0.1);
+    z-index: 2;
+}
+
+.avatar-img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    transition: transform 0.5s ease;
+}
+
+.pizza-avatar.animated:hover .avatar-img {
+    transform: scale(1.1);
+}
+
+/* Slice Count Indicator */
+.slice-count-indicator {
+    position: absolute;
+    bottom: 5%;
+    right: 5%;
+    background: linear-gradient(45deg,
+        var(--pizza-red),
+        var(--pizza-orange)
+    );
+    color: var(--primary-dark);
+    border-radius: 50%;
+    width: 22px;
+    height: 22px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 10px;
+    font-weight: bold;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    z-index: 3;
+}
+
+.pizza-avatar-small .slice-count-indicator {
+    width: 16px;
+    height: 16px;
+    font-size: 8px;
+}
+
+.pizza-avatar-large .slice-count-indicator {
+    width: 30px;
+    height: 30px;
+    font-size: 14px;
+}
+
+/* Progress Indicator */
+.slice-progress {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    pointer-events: none;
+    z-index: 1;
+    transform: rotate(-90deg);
+}
+
+.progress-background,
+.progress-indicator {
+    fill: none;
+    stroke-width: 3px;
+}
+
+.progress-background {
+    stroke: rgba(255, 255, 255, 0.05);
+}
+
+.progress-indicator {
+    stroke: url(#progressGradient);
+    stroke-linecap: round;
+    transition: stroke-dasharray 0.5s ease-in-out;
+}
+
+.pizza-avatar-small .progress-background,
+.pizza-avatar-small .progress-indicator {
+    stroke-width: 2px;
+}
+
+.pizza-avatar-large .progress-background,
+.pizza-avatar-large .progress-indicator {
+    stroke-width: 4px;
+}
+
+/* Animation for the progress indicator */
+@keyframes progressRotate {
+    to { transform: rotate(360deg); }
+}
+
+.slice-progress {
+    animation: progressRotate 20s linear infinite;
+    animation-play-state: paused;
+}
+
+.pizza-avatar.animated:hover .slice-progress {
+    animation-play-state: running;
+}
+
+/* SVG Gradient for progress indicator */
+.pizza-avatar-wrapper svg defs {
+    position: absolute;
+    width: 0;
+    height: 0;
+}
+
+/* Add a linear gradient for the progress indicator */
+.slice-progress linearGradient stop:first-child {
+    stop-color: var(--pizza-red);
+}
+
+.slice-progress linearGradient stop:last-child {
+    stop-color: var(--pizza-yellow);
+}
+
+/* Size-specific adjustments */
+.pizza-avatar-small .pizza-avatar-slice {
+    transform-origin: bottom right;
+}
+
+.pizza-avatar-large .pizza-avatar-center {
+    width: 70%;
+    height: 70%;
+}
+
+/* Responsive Considerations */
+@media (max-width: 768px) {
+    .pizza-avatar-large {
+        width: 100px;
+        height: 100px;
+    }
+}
+
+@media (max-width: 480px) {
+    .pizza-avatar-medium {
+        width: 60px;
+        height: 60px;
+    }
+    
+    .pizza-avatar-large {
+        width: 80px;
+        height: 80px;
+    }
+}

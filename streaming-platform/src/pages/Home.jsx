@@ -199,7 +199,17 @@ const Home = () => {
                 <p className="home-description">
                     Stream mainstream hits, discover indie gems, and support upcoming projects. All in one perfectly curated slice.
                 </p>
-                <Link to="/browse" className="btn-primary">Start Watching</Link>
+                <div className="hero-buttons">
+                    <Link to="/browse" className="btn-primary">Start Watching</Link>
+                    <Link to="/admin" className="btn-admin">Admin Panel</Link>
+                </div>
+                
+                {/* Schema Management Link */}
+                <div className="admin-tools">
+                    <Link to="/api/schema/status" target="_blank" className="schema-link">
+                        Database Schema
+                    </Link>
+                </div>
             </div>
             
             {/* Error message */}

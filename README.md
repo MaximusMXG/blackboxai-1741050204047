@@ -129,10 +129,6 @@ The pizza avatar component dynamically renders a pizza where each slice represen
 ### Brand System
 Brands represent content creators on the platform. They have profiles, can upload videos, and receive slice allocations from users. Verified brands have access to the brand dashboard with analytics and content management tools.
 
-## License
-
-This project is licensed under the MIT License - see the LICENSE file for details.
-
 ## Acknowledgements
 
 - Pizza emoji for inspiration 🍕
